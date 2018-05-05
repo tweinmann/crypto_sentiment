@@ -53,60 +53,6 @@
     return;
 
  });
- /*
- function getArticles(query) {
-    console.log("getArticles");
-    // Return new promise 
-    return new Promise((resolve, reject) => {
-        // Setting URL and headers for request
-        var options = {
-            url: "https://api.nytimes.com/svc/search/v2/articlesearch.json",
-            qs: {
-              'api-key': "d9fc600087384af5a526009b2ef61ee9",
-              'q': query,
-            }
-        };
-        // Do async job
-        request.get(options, (err, resp, body) => {
-            if (err) {
-                // failed to connect to URL
-                reject(err);
-            } else if (resp.statusCode != 200) {
-                // error in web service call
-                reject(JSON.parse(body).error.message);
-            } else {
-                // call successful
-                resolve(JSON.parse(body).response.docs);
-            }
-        })
-      })
- }
-
-  function calculateSentiment(items) {
-    console.log("calculateSentiment");
-    var result = [];
-    items.forEach((item) => {
-        result.push(
-            new Promise((resolve, reject) => {
-                var sentiment = new Sentiment();
-                var boilerpipe = new Boilerpipe({
-                    extractor: Boilerpipe.Extractor.Article,
-                    url: item.web_url});
-                boilerpipe.getText((err, text) => {
-                    if(!err) {
-                        var score = sentiment.analyze(text).score;
-                        resolve({'score':score,'title':item.headline.main,'url':item.web_url,'snippet':item.snippet});
-                    } else {
-                        resolve({'score':'n/a','title':item.headline.main,'url':item.web_url,'snippet':item.snippet});
-                    } 
-                })      
-            }) 
-        );
-    });
-    return Promise.all(result);
- }
-
-*/
 
  function getArticles(query) {
     console.log("getArticles");
