@@ -118,7 +118,7 @@
         newsapi.v2.everything({
             q: query,
             language: 'en',
-            sources: 'crypto-coins-news',
+            sources: 'crypto-coins-news,ars-technica',
      //       sources: 'crypto-coins-news,ars-technica,techcrunch,techradar,business-insider,financial-post,financial-times,fortune,hacker-news,recode,the-verge,the-wall-street-journal,time,wired',
             from: moment().add(-2, 'week').format('YYYY-MM-DD'),
             /*  domains: 'bbc.co.uk, techcrunch.com',
