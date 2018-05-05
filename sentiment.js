@@ -125,7 +125,7 @@
             to: '2017-12-12',
             language: 'en',
             sortBy: 'relevancy',
-            page: 0;*/
+            page: 8*/
         }).then((response) => {
             resolve(response.articles);
         }).catch((err) => {
