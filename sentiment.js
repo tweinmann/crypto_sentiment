@@ -9,7 +9,7 @@
  const Joi = require('joi');
  const NewsAPI = require('newsapi');
  
- // instances;
+ // instances
  const newsapi = new NewsAPI('69b72226c32e4419ba88d7014f4134ee');
  const app = express();
 
@@ -113,7 +113,7 @@
     // Return new promise 
     return new Promise((resolve, reject) => {
 
-        // To query /v2/everything
+        // To query /v2/everything 
         // You must include at least one q, source, or domain
         newsapi.v2.everything({
             q: query,
