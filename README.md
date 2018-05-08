@@ -8,3 +8,4 @@ Alpha version of a tiny app that does the following:
   * Extract plain text (strip layout, adds, etc)
   * Calculate sentiment based on AFINN words
 3. Return HTML with color coded ```<div>``` elements (red = negative, green = positive sentiment)
+ 
