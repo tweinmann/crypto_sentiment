@@ -11,5 +11,5 @@ Alpha version of a tiny app that does the following:
 
 Create a file '''.env''' in the directory with the following content:
 
-'''NEWS_API_KEY=[your API key goes here]'''
+`NEWS_API_KEY=[your API key goes here]`
  
