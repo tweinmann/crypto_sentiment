@@ -10,7 +10,7 @@
  const NewsAPI = require('newsapi');
  
  // instances
- const newsapi = new NewsAPI('69b72226c32e4419ba88d7014f4134ee');
+ const newsapi = new NewsAPI('[API_KEY_GOES_HERE]');
  const app = express();
 
  // cache results
