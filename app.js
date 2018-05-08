@@ -136,7 +136,7 @@
     var sentiment = new Sentiment();
     var totalScore = 0;
     var html = "<html><body>";
-    items.map((item) => {
+    items.forEach((item) => {
         var score = item.score;
         var background = "rgb(200, 200, 200)"; 
         if(score == 'n/a') {
