@@ -8,9 +8,12 @@
  const requestPromise = require('request-promise');
  const Joi = require('joi');
  const NewsAPI = require('newsapi');
+
+ // load environment vars
+ require('dotenv').config();
  
  // instances
- const newsapi = new NewsAPI('[API_KEY_GOES_HERE]');
+ const newsapi = new NewsAPI(process.env.NEWS_API_KEY);
  const app = express();
 
  // cache results
@@ -47,6 +50,7 @@
             return;
         }).catch((error) => {
             console.log(error);
+            res.sendStatus(500);
             return;
         });
     }
