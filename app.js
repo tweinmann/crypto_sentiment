@@ -1,4 +1,4 @@
- // pull in libraries (new feature)
+ // pull in libraries
  const util = require('util');
  const express = require('express');
  const request = require('request');
