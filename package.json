@@ -1,0 +1,19 @@
+{
+  "name": "sentiment",
+  "version": "0.0.1",
+  "description": "crypto sentiment analyser",
+  "main": "sentiment.js",
+  "scripts": {
+    "test": "node sentiment.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tweinmann/sentiment.git"
+  },
+  "author": "Tobias Weinmann",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tweinmann/sentiment/issues"
+  },
+  "homepage": "https://github.com/tweinmann/sentiment#readme"
+}
