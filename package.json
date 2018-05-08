@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/tweinmann/sentiment/issues"
   },
-  "homepage": "https://github.com/tweinmann/sentiment#readme"
+  "homepage": "https://github.com/tweinmann/sentiment#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
