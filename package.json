@@ -1,5 +1,5 @@
 {
-  "name": "sentiment",
+  "name": "crypto_sentiment",
   "version": "0.0.1",
   "description": "crypto sentiment analyser",
   "main": "sentiment.js",
@@ -24,6 +24,7 @@
     "newsapi": "^2.2.2",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
+    "sentiment": "^5.0.0",
     "util": "^0.10.3"
   }
 }
