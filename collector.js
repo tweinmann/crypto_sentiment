@@ -11,6 +11,7 @@ const NewsAPI = require('newsapi');
 const MongoClient = require('mongodb').MongoClient;
 const Coinmarketcap = require('node-coinmarketcap-api');
 const collector = require('./collector');
+const extractor = require('node-article-extractor');
 
 // load environment vars
 require('dotenv').config();
@@ -94,19 +95,21 @@ function calculateSentiment(articles) {
         result.push(
             new Promise((resolve, reject) => {
                 var sentiment = new Sentiment();
-                console.log("scanning -> " + item.url);
-                boiler(item.url, (err, text) => {
+                request(item.url, (err, res, body) => {
+                    console.log("scanning -> " + item.url);
                     var score = "n/a";
                     var comparative = "n/a";
                     if(!err) {
-                        var result = sentiment.analyze(text);
+                        var content = extractor(body);
+                         var result = sentiment.analyze(content.text);
                         score = result.score;
                         comparative = result.comparative;
                     } else {
                         console.log(err);
                     }
-                    resolve({'timestamp':item.publishedAt,'query':item.coin,'score':score,'comparative':comparative,'title':item.title,'url':item.url,'snippet':item.description,'source':item.source.id});
-                })      
+                    resolve({'timestamp':item.publishedAt,'query':item.coin,'score':score,'comparative':comparative,'title':item.title,'url':item.url,'snippet':item.description,'source':item.source.id});          
+                })
+
             }) 
         );
     });
