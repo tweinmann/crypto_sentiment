@@ -1,4 +1,4 @@
-// pull in libraries (test)
+// pull in libraries
 const util = require('util');
 const express = require('express');
 const request = require('request');
@@ -9,12 +9,14 @@ const requestPromise = require('request-promise');
 const Joi = require('joi');
 const NewsAPI = require('newsapi');
 const MongoClient = require('mongodb').MongoClient;
+const Coinmarketcap = require('node-coinmarketcap-api');
 const collector = require('./collector');
 
 // load environment vars
 require('dotenv').config();
 
 // instances
+const coinmarketcap = new Coinmarketcap();
 const newsapi = new NewsAPI(process.env.NEWS_API_KEY);
 
 // static coin list (for now)
@@ -23,7 +25,9 @@ var coins = ["nano", "bitcoin", "ethereum", "ripple", "stellar", "omisego", "0x"
 
 exports.collect = function collect() {
 
-    getArticles().then((input) => {
+    getCoins().then((input) => {
+        return getArticles(input);
+    }).then((input) => {
         return skimArticles(input);
     }).then((input) => {
         return calculateSentiment(input);
@@ -31,15 +35,15 @@ exports.collect = function collect() {
         return storeArticles(input);
     }).then((input) => {
         // wait 60 seconds and restart
-        setTimeout(() => {collect()}, 1000 * 60);
-        console.log("collecting again in 60 seconds ...")
+        setTimeout(() => {collect()}, 1000 * 3600);
+        console.log("collecting again in 1 hour ...")
     }).catch((err) => {
         console.log(err);
     });
  
 }
 
-function getArticles(coin) {
+function getArticles(coins) {
     console.log("getArticles");
     return new Promise((resolve, reject) => {
         var result = [];
@@ -90,8 +94,8 @@ function calculateSentiment(articles) {
         result.push(
             new Promise((resolve, reject) => {
                 var sentiment = new Sentiment();
+                console.log("scanning -> " + item.url);
                 boiler(item.url, (err, text) => {
-                    console.log("scanning -> " + item.url);
                     var score = "n/a";
                     var comparative = "n/a";
                     if(!err) {
@@ -164,5 +168,15 @@ function skimArticles(articles) {
         return articles;
     });
 
+}
 
+function getCoins() {
+    console.log("getCoins");
+    return coinmarketcap.ticker("","",10).then((input) => {
+        var result = [];
+        input.forEach((item) => {
+            result.push(item.name.toLowerCase());
+        });
+        return result;
+    });
 }
