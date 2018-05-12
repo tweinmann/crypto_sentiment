@@ -4,6 +4,7 @@
  const request = require('request');
  const requestPromise = require('request-promise');
  const Joi = require('joi');
+ const NewsAPI = require('newsapi');
  const MongoClient = require('mongodb').MongoClient;
  const collector = require('./collector');
 
@@ -28,7 +29,7 @@
  
     new Promise((resolve, reject) => {
         var url = process.env.MONGODB_URL;
-        MongoClient.connect(url, (err, db) => {
+        MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
           if (err) reject(err);
           var dbo = db.db("crypto_sentiment");
           var query = { query: result.value.q};

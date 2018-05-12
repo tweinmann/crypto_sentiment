@@ -2,7 +2,6 @@
 const util = require('util');
 const express = require('express');
 const request = require('request');
-const boiler = require('boilerpipe-scraper');
 const Sentiment = require('sentiment');
 const moment = require('moment');
 const requestPromise = require('request-promise');
@@ -31,7 +30,7 @@ exports.collect = function collect() {
     }).then((input) => {
         return skimArticles(input);
     }).then((input) => {
-        return calculateSentiment(input);
+        return calculateSentimentR(input);
     }).then((input) => {
         return storeArticles(input);
     }).then((input) => {
@@ -116,6 +115,37 @@ function calculateSentiment(articles) {
     return Promise.all(result);     
 }
 
+function calculateSentimentR(articles, result = []) {
+    console.log("calculateSentiment");
+    if(articles.length > 0) {
+        return new Promise((resolve, reject) => {
+            var item = articles.pop();
+            var sentiment = new Sentiment();
+            request(item.url, (err, res, body) => {
+                console.log("scanning -> " + item.url);
+                var score = "n/a";
+                var comparative = "n/a";
+                if(!err) {
+                    var content = extractor(body);
+                    var result = sentiment.analyze(content.text);
+                    score = result.score;
+                    comparative = result.comparative;
+                } else {
+                    // no sentiment calculated, but proceed
+                    console.log(err);
+                }
+                resolve({'timestamp':item.publishedAt,'query':item.coin,'score':score,'comparative':comparative,'title':item.title,'url':item.url,'snippet':item.description,'source':item.source.id});          
+            });
+        }).then((input) => {
+            result.push(input);
+            return calculateSentimentR(articles, result);
+        });  
+    } else {
+        return result;
+    }
+    
+}
+
 function storeArticles(articles) {
     console.log("storeArticles");
     // store articles
@@ -124,7 +154,7 @@ function storeArticles(articles) {
     articles.forEach((item) => {
         result.push(
             new Promise((resolve, reject) => {
-                MongoClient.connect(url, (err, db) => {
+                MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                     if (err) reject(err);
                     var dbo = db.db("crypto_sentiment");
                     dbo.collection("articles").updateOne({url: item.url,query: item.query}, {$set:item}, {upsert: true}, (err, res) =>{
@@ -149,7 +179,7 @@ function skimArticles(articles) {
         articles.forEach((item) => {
             result.push(
                 new Promise((resolve, reject) => {
-                    MongoClient.connect(url, (err, db) => {
+                    MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                         if (err) reject(err);
                         var dbo = db.db("crypto_sentiment");
                         dbo.collection("articles").findOne({url: item.url,query: item.coin}, (err, res) => {
@@ -175,7 +205,7 @@ function skimArticles(articles) {
 
 function getCoins() {
     console.log("getCoins");
-    return coinmarketcap.ticker("","",10).then((input) => {
+    return coinmarketcap.ticker("", "", 20).then((input) => {
         var result = [];
         input.forEach((item) => {
             result.push(item.name.toLowerCase());
