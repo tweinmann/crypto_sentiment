@@ -75,7 +75,7 @@ app.get('/coin', (req, res) => {
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
           if (err) reject(err);
           var dbo = db.db("crypto_sentiment");
-          var query = { query: result.value.q};
+          var query = { query: result.value.q, timestamp : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}};
           console.log(query);
           dbo.collection("articles").find(query).toArray(function(err, result) {
             if (err) reject(err);
