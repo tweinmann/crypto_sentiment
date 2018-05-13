@@ -27,12 +27,16 @@ exports.collect = function collect() {
 
     getCoins().then((input) => {
         return getArticles(input);
-    }).then((input) => {
+ /*
+   }).then((input) => {
         return skimArticles(input);
+*/
     }).then((input) => {
         return calculateSentimentR(input);
+/*
     }).then((input) => {
         return storeArticles(input);
+*/
     }).then((input) => {
         // wait 60 seconds and restart
         setTimeout(() => {collect()}, 1000 * 3600);
@@ -56,7 +60,8 @@ function getArticles(coins) {
                         q: coin,
                         language: 'en',
                         sources: 'crypto-coins-news',
-    //                    from: moment().add(-4, 'week').format('YYYY-MM-DD'),
+                        pageSize: 100,
+                        from: moment().add(-4, 'week').format('YYYY-MM-DD'),
                     }).then((response) => {
                         var articles = response.articles;
                         articles.forEach((article) => {
@@ -114,9 +119,9 @@ function calculateSentiment(articles) {
     });
     return Promise.all(result);     
 }
-
+/*
 function calculateSentimentR(articles, result = []) {
-    console.log("calculateSentiment");
+    console.log("calculateSentiment (" + articles.length + " to go)");
     if(articles.length > 0) {
         return new Promise((resolve, reject) => {
             var item = articles.pop();
@@ -139,6 +144,83 @@ function calculateSentimentR(articles, result = []) {
         }).then((input) => {
             result.push(input);
             return calculateSentimentR(articles, result);
+        });  
+    } else {
+        return result;
+    }
+    
+}
+*/
+
+function calculateSentimentR(articles) {
+    if(articles.length%50==0) console.log("calculateSentiment (" + articles.length + " to go)");
+    if(articles.length > 0) {
+        var article = articles.pop();        
+
+        return new Promise((resolve, reject) => {
+            // lookup article
+            var url = process.env.MONGODB_URL;
+            MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
+                if (err) reject(err);
+                var dbo = db.db("crypto_sentiment");
+                dbo.collection("articles").findOne({url: article.url,query: article.coin}, (err, res) => {
+                    if (err) reject(err);
+                    db.close();
+                    if (!res) resolve(false);
+                    else resolve(true);
+                });
+            });
+        }).then((found) => {        
+            if(!found) {
+                // calculate sentiment
+                return new Promise((resolve, reject) => {
+                    request(article.url, (err, res, body) => {
+                        var sentiment = new Sentiment();
+                        var score = "n/a";
+                        var comparative = "n/a";
+                        if(!err) {
+                            var content = extractor(body);
+                            var result = sentiment.analyze(content.text);
+                            score = result.score;
+                            comparative = result.comparative;
+                        } else {
+                            // no sentiment calculated, but proceed
+                            console.log(err);
+                        }
+                        resolve({'timestamp':article.publishedAt,'query':article.coin,'score':score,'comparative':comparative,'title':article.title,'url':article.url,'snippet':article.description,'source':article.source.id});          
+                    });
+                });
+            } else {
+                return null;
+            }
+        }).then((newItem) => {
+            if(newItem) {
+                // store new item
+                return new Promise((resolve, reject) => {
+                    var url = process.env.MONGODB_URL;
+                    MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
+                        if (err) reject(err);
+                        var dbo = db.db("crypto_sentiment");
+                        dbo.collection("articles").updateOne({url: newItem.url,query: newItem.query}, {$set:newItem}, {upsert: true}, (err, res) =>{
+                            if (err) {
+                                console.log(err);
+                                reject(err);
+                            }
+                            console.log((res.result.upserted?"added - ":"skipped - ") + newItem.url + " (query: " + newItem.query + ", score: " + newItem.score + ")");
+                            db.close();
+                            resolve(newItem);
+                        });
+                    });
+                });
+            } else {
+                return;
+            }
+        }).then((item) => {
+            if(articles.length > 0) {
+                return calculateSentimentR(articles);
+            } else {
+                return;
+            }
         });  
     } else {
         return result;
@@ -189,7 +271,9 @@ function skimArticles(articles) {
                             else resolve(null);
                         });
                     });
-                }) 
+                }).catch((err) => {
+                    console.log(err);
+                })
             );
         });
         resolve(Promise.all(result));    

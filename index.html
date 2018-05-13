@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+text {
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+.node--hover circle {
+  stroke: #000;
+  stroke-width: 1.2px;
+}
+
+</style>
+<svg width="960" height="960"><g transform="translate(1,1)"></g></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+var format = d3.format(",d");
+
+var color = d3.scaleSequential(d3.interpolateMagma)
+    .domain([-4, 4]);
+
+var stratify = d3.stratify()
+    .parentId(function(d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
+
+var pack = d3.pack()
+    .size([width - 2, height - 2])
+    .padding(2);
+
+d3.csv("/coin", function(error, data) {
+  if (error) throw error;
+
+  var root = stratify(data)
+      .sum(function(d) { return d.value; })
+      .sort(function(a, b) { return b.value - a.value; });
+
+  pack(root);
+
+    console.log(root);
+
+  var node = svg.select("g")
+    .selectAll("g")
+   .data(root.leaves().concat(root.children))
+    .enter().append("g")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .attr("class", function(d) { return "node" + (!d.children ? " node--leaf" : d.depth ? "" : " node--root"); })
+      .each(function(d) { d.node = this; });
+/*
+      .on("mouseover", hovered(true))
+      .on("mouseout", hovered(false));
+*/
+  node.append("circle")
+      .attr("id", function(d) { return "node-" + d.id; })
+      .attr("r", function(d) { return d.r; })
+//     .style("fill", function(d) { return color(d.depth); });
+        .style("fill", function(d) { 
+        var background = "rgb(255, 255, 255)"; 
+        if(d.id == "coins") return;
+        var score = d.value;
+        if(score == 'n/a') {
+            background = "rgb(200, 200, 200)"; 
+        } else if (d.data.sent == "neg") {
+            background = "rgb(255, " + (255-score*10) + ", " + (255-score*10) + ")"; 
+        } else if (d.data.sent == "pos") {
+            background = "rgb(" + (255-score*10) + ", 255, " + (255-score*10) + ")"; 
+        }          
+        return background;
+      })
+      .style("fill-opacity", function(d) {
+        if(d.data.sent) return 1;
+        else return 0;
+      });
+
+  node.append("text")
+    .style("font-size", "24px")    
+    .style("color", "#ff0000")
+    .style("text-shadow", "2px 2px gray")
+    .text(function(d) {
+            if(!d.data.sent) return d.id.substring(6);
+            else return;
+        });
+
+  node.append("title")
+      .text(function(d) { return d.id + "\n" + format(d.value); });
+
+});
+
+function hovered(hover) {
+  return function(d) {
+    d3.selectAll(d.ancestors().map(function(d) { return d.node; })).classed("node--hover", hover);
+  };
+}
+
+</script>
