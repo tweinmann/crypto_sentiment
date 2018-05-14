@@ -22,7 +22,7 @@
  });
 
 // request handler
-app.get('/coin', (req, res) => {
+app.get('/csv', (req, res) => {
     new Promise((resolve, reject) => {
         var url = process.env.MONGODB_URL;
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
@@ -49,6 +49,43 @@ app.get('/coin', (req, res) => {
             });
         });
         res.send(output);
+        return;
+    }).catch((error) => {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+    });
+});
+
+
+// request handler
+app.get('/json', (req, res) => {
+    new Promise((resolve, reject) => {
+        var url = process.env.MONGODB_URL;
+        MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
+          if (err) reject(err);
+          var dbo = db.db("crypto_sentiment");
+          dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}}).toArray(function(err, result) {
+            if (err) reject(err);
+            db.close();
+            resolve(result);
+          });
+        });
+    }).then((input) => {       
+        var coins = {};
+        input.forEach((item) => {
+            if(!coins[item.query]) coins[item.query] = [];
+            coins[item.query].push(item);
+        });
+        var output = {"id":"coins", "children": []};
+        Object.keys(coins).forEach((coin) => {
+            var temp = [];
+            coins[coin].forEach((item) => {
+                temp.push({"id": coin + "." + item._id, "parentId": coin, "url": item.url, "value": Math.abs(item.score), "sentiment":(item.score>0?"pos":"neg")});
+            });
+            output.children.push( {"id":coin, "parentId":"coins", "children": temp});
+        });
+        res.send(JSON.stringify(output));
         return;
     }).catch((error) => {
         console.log(error);

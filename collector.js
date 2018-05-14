@@ -29,8 +29,8 @@ exports.collect = function collect() {
         return calculateSentiment(input);
     }).then((input) => {
         // wait 60 seconds and restart
-        setTimeout(() => {collect()}, 1000 * 3600);
-        console.log("Collecting again in 1 hour ...")
+        setTimeout(() => {collect()}, 1000 * 3600 * 4);
+        console.log("Collecting again in 4 hours ...")
     }).catch((err) => {
         console.log(err);
     });

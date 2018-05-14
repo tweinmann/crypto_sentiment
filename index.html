@@ -23,77 +23,73 @@ var svg = d3.select("svg"),
 
 var format = d3.format(",d");
 
-var color = d3.scaleSequential(d3.interpolateMagma)
-    .domain([-4, 4]);
-
-var stratify = d3.stratify()
-    .parentId(function(d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
-
 var pack = d3.pack()
     .size([width - 2, height - 2])
     .padding(2);
 
-d3.csv("/coin", function(error, data) {
-  if (error) throw error;
+d3.json("/json", function(error, data) {
 
-  var root = stratify(data)
-      .sum(function(d) { return d.value; })
-      .sort(function(a, b) { return b.value - a.value; });
+    if (error) throw error;
+    
+    root = d3.hierarchy(data)
+        .sum(function(d) { return d.value; })
+        .sort(function(a, b) { return b.value - a.value; });
+    pack(root);
 
-  pack(root);
+    var node = svg.select("g")
+        .selectAll("g")
+ //     .data(root.leaves().concat(root.children))
+        .data(root.children.concat(root.leaves()))
+        .enter().append("g")
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        .attr("class", function(d) { return "node" + (!d.children ? " node--leaf" : d.depth ? "" : " node--root"); })
+        .each(function(d) { d.node = this; });
 
-    console.log(root);
-
-  var node = svg.select("g")
-    .selectAll("g")
-   .data(root.leaves().concat(root.children))
-    .enter().append("g")
-      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-      .attr("class", function(d) { return "node" + (!d.children ? " node--leaf" : d.depth ? "" : " node--root"); })
-      .each(function(d) { d.node = this; });
-/*
-      .on("mouseover", hovered(true))
-      .on("mouseout", hovered(false));
-*/
-  node.append("circle")
-      .attr("id", function(d) { return "node-" + d.id; })
-      .attr("r", function(d) { return d.r; })
-//     .style("fill", function(d) { return color(d.depth); });
+      node.append("circle")
+        .attr("id", function(d) { return "node-" + d.data.id; })
+        .attr("r", function(d) { return d.r; })
+//      .style("fill", function(d) { return color(d.depth); });
         .style("fill", function(d) { 
-        var background = "rgb(255, 255, 255)"; 
-        if(d.id == "coins") return;
-        var score = d.value;
-        if(score == 'n/a') {
-            background = "rgb(200, 200, 200)"; 
-        } else if (d.data.sent == "neg") {
-            background = "rgb(255, " + (255-score*10) + ", " + (255-score*10) + ")"; 
-        } else if (d.data.sent == "pos") {
-            background = "rgb(" + (255-score*10) + ", 255, " + (255-score*10) + ")"; 
-        }          
-        return background;
-      })
-      .style("fill-opacity", function(d) {
-        if(d.data.sent) return 1;
-        else return 0;
-      });
+            var background = "rgb(255, 255, 255)"; 
+            if(d.data.id == "coins") return;
+            var score = d.data.value;
+            if(score == 'n/a') {
+                background = "rgb(200, 200, 200)"; 
+            } else if (d.data.sentiment == "neg") {
+                background = "rgb(255, " + (255-score*10) + ", " + (255-score*10) + ")"; 
+            } else if (d.data.sentiment == "pos") {
+                background = "rgb(" + (255-score*10) + ", 255, " + (255-score*10) + ")"; 
+            }          
+            return background;
+          })
+        .style("fill-opacity", function(d) {
+            if(!d.data.sentiment) return 1;
+            else return 0.5;
+        })
+        .on("click", function(d) {
+            location.href = d.data.url;
+        })
+        .on("mouseover", hovered(true))
+        .on("mouseout", hovered(false));
+    
 
-  node.append("text")
-    .style("font-size", "24px")    
-    .style("color", "#ff0000")
-    .style("text-shadow", "2px 2px gray")
-    .text(function(d) {
-            if(!d.data.sent) return d.id.substring(6);
+    node.append("text")
+        .style("font-size", "24px")    
+        .style("color", "#ff0000")
+        .style("text-shadow", "2px 2px gray")
+        .text(function(d) {
+            if(!d.data.sentiment) return d.data.id;
             else return;
         });
 
-  node.append("title")
-      .text(function(d) { return d.id + "\n" + format(d.value); });
+    node.append("title")
+        .text(function(d) { return d.data.url });
 
 });
 
 function hovered(hover) {
   return function(d) {
-    d3.selectAll(d.ancestors().map(function(d) { return d.node; })).classed("node--hover", hover);
+    if(d.data.sentiment) d3.select(this).attr("stroke", hover?"#000":"");
   };
 }
 
