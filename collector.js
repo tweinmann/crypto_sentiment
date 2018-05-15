@@ -162,7 +162,7 @@ function getCoins() {
         input.forEach((item) => {
             result.push(item.name.toLowerCase());
         });
-        console.log("Fetched top 20 coins -> " + result);
+        console.log("Fetched top 25 coins -> " + result);
         return result;
     });
 }
