@@ -46,7 +46,7 @@ function getArticles(coins) {
                 new Promise((resolve, reject) => {
      
                     newsapi.v2.everything({
-                        q: coin,
+                        q: '"' + coin + '"',
                         language: 'en',
                         sources: 'crypto-coins-news',
                         pageSize: 100,
@@ -157,7 +157,7 @@ function calculateSentiment(articles) {
 }
 
 function getCoins() {
-    return coinmarketcap.ticker("", "", 20).then((input) => {
+    return coinmarketcap.ticker("", "", 25).then((input) => {
         var result = [];
         input.forEach((item) => {
             result.push(item.name.toLowerCase());

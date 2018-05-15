@@ -157,6 +157,22 @@ app.get('/json', (req, res) => {
     return html;
  }
 
+ function deleteCoin(coin) {
+    var url = process.env.MONGODB_URL;
+    MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
+    if (err) throw err;
+       var dbo = db.db("crypto_sentiment");
+       var myquery = { query: coin };
+       dbo.collection("articles").deleteMany(myquery, function(err, obj) {
+         if (err) throw err;
+         console.log(obj.result.n + " document(s) deleted");
+         db.close();
+       });
+     });   
+ }
+
  app.listen(3000, () => console.log('Listening on port 3000'));
  
- collector.collect();
+ //collector.collect();
+
+
