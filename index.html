@@ -76,7 +76,9 @@ d3.json("/json", function(error, data) {
             else return;
         })
         .style("font-size", function(d) {
-           return Math.min(2 * d.r, (2 * d.r - 8) / 6) + "px";
+           var fs = parseInt(Math.min(2 * d.r, (2 * d.r - 8) / 6));
+           fs = fs<10?10:fs;
+           return fs + "px";
         });
 
     node.append("title")
