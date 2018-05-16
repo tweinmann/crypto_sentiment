@@ -9,7 +9,10 @@ Alpha version of a tiny app that does the following:
   * Calculate sentiment based on AFINN words
 3. Return HTML with color coded ```<div>``` elements (red = negative, green = positive sentiment)
 
-Create a file '''.env''' in the directory with the following content (get your key at https://newsapi.org/):
+Create a file '''.env''' in the directory with the following content:
 
-`NEWS_API_KEY=[your API key goes here]`
+`NEWS_API_KEY=[your NewsAPI key]` (get your key at https://newsapi.org/)
+`MONGODB_URL=mongodb://[your db user]:[your db password]@[your db URL]` 
+`MONGODB_NAME=[your db name]` 
+
  
