@@ -15,7 +15,7 @@ On a regular interval it does the following:
 
 The result is visualized using D3 pack. Each article is rendered as a bubble. Negative sentiment is shown in red, positive sentiment in green. The bigger the bubble, the higher the score. 
 
-Check out the example -> https://crypto-sentiment.now.sh/ 
+Check out the example -> https://crypto-sentiment.now.sh
 
 **Prerequisites**
 
