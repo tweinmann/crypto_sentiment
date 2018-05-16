@@ -4,6 +4,7 @@
   "description": "crypto sentiment analyser",
   "main": "sentiment.js",
   "scripts": {
+    "start": "node app.js",
     "test": "nodemon --inspect app.js",
     "now-start": "node app.js"
   },
