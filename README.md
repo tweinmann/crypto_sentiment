@@ -1,6 +1,6 @@
 # crypto sentiment
 
-Tiny app that provides an "at a glance" view of news articles sentiments per crypto currency
+Tiny app that provides an "at a glance" view of news articles sentiments per crypto currency 
 
 On a regular interval it does the following:
 
@@ -12,6 +12,10 @@ On a regular interval it does the following:
     * Extract plain text (strip layout, adds, etc)
     * Calculate sentiment based on AFINN words
     * Store result in db
+
+The result is visualized using D3 pack. Each article is rendered as a bubble. Negative sentiment is shown in red, positive sentiment in green. The bigger the bubble, the higher the score. 
+
+Check out the example -> https://crypto-sentiment.now.sh/ 
 
 **Prerequisites**
 
