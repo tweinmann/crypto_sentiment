@@ -6,12 +6,12 @@ On a regular interval it does the following:
 
 1. Get a list of top 25 coins from coinmarketcap
 2. For each coin ...
-  1. Get latest news articles from crypto-news via newsapi.org
-  2. For each article ...
-    1. Get full HTML from article source URL
-    2. Extract plain text (strip layout, adds, etc)
-    3. Calculate sentiment based on AFINN words
-    4. Store result in db
+    1. Get latest news articles from "crypto-coins-news" via https://newsapi.org
+    2. For each article ...
+        1. Get full HTML from article source URL
+        2. Extract plain text (strip layout, adds, etc)
+        3. Calculate sentiment based on AFINN words
+        4. Store result in db
 
 The result is visualized using D3 pack. Each article is rendered as a bubble. Negative sentiment is shown in red, positive sentiment in green. The bigger the bubble, the higher the score. 
 
