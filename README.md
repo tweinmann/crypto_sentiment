@@ -4,7 +4,7 @@ Tiny sample app that provides an "at a glance" view of news article sentiments p
 
 On a regular interval it does the following:
 
-1. Get a list of top 25 coins from coinmarketcap
+1. Get a list of top 25 coins from https://www.coinmarketcap.com
 2. For each coin ...
     1. Get latest news articles from "crypto-coins-news" via https://newsapi.org
     2. For each article ...
