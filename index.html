@@ -43,7 +43,6 @@ d3.json("/json", function(error, data) {
       node.append("circle")
         .attr("id", function(d) { return "node-" + d.data.id; })
         .attr("r", function(d) { return d.r; })
-//      .style("fill", function(d) { return color(d.depth); });
         .style("fill", function(d) { 
             var background = "rgb(255, 255, 255)"; 
             if(d.data.id == "coins") return;
@@ -71,6 +70,7 @@ d3.json("/json", function(error, data) {
     node.append("text")
         .style("color", "#ff0000")
         .style("font-weight", "bold")
+        .style("class", ".bubble_hover")
         .text(function(d) {
             if(!d.data.sentiment) return d.data.id.replace(" ", "\n");
             else return;
@@ -88,7 +88,10 @@ d3.json("/json", function(error, data) {
 
 function hovered(hover) {
   return function(d) {
-    if(d.data.sentiment) d3.select(this).attr("stroke", hover?"#000":"");
+    if(d.data.sentiment) {
+        d3.select(this).attr("stroke", hover?"#000":"");
+        d3.select(this).attr("cursor", hover?"pointer":"auto");
+    }
   };
 }
 
