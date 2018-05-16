@@ -13,12 +13,12 @@ On a regular interval it does the following:
     * Calculate sentiment based on AFINN words
     * Store result in db
 
-Prerequisites
+**Prerequisites**
 
 1. Node
 2. MongoDB
 
-Installation:
+**Installation**
 
 1. Create a file '''.env''' in the directory with the following content:
 
@@ -30,7 +30,7 @@ Installation:
 
 2. `nmp install`
 
-Usage:
+**Usage**
 
 1. `npm start`
 2. Access root of web app "/"
