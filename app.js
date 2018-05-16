@@ -9,6 +9,7 @@
  const path = require('path');
  const moment = require('moment');
  const collector = require('./collector');
+ const morgan = require('morgan');
 
  // load environment vars
  require('dotenv').config();
@@ -16,9 +17,13 @@
  // instances
  const app = express();
 
+ // logger
+ app.use(morgan('combined')); 
+
  // request handler
  app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
+    console.log()
  });
 
 // request handler
