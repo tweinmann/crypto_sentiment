@@ -88,7 +88,7 @@ function calculateSentiment(articles) {
             var url = process.env.MONGODB_URL;
             MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                 if (err) reject(err);
-                var dbo = db.db("crypto_sentiment");
+                var dbo = db.db(process.env.MONGODB_NAME);
                 dbo.collection("articles").findOne({url: article.url,query: article.coin}, (err, res) => {
                     if (err) reject(err);
                     db.close();
@@ -126,7 +126,7 @@ function calculateSentiment(articles) {
                     var url = process.env.MONGODB_URL;
                     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                         if (err) reject(err);
-                        var dbo = db.db("crypto_sentiment");
+                        var dbo = db.db(process.env.MONGODB_NAME);
                         dbo.collection("articles").updateOne({url: newItem.url,query: newItem.query}, {$set:newItem}, {upsert: true}, (err, res) =>{
                             if (err) {
                                 console.log(err);

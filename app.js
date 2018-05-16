@@ -27,7 +27,7 @@ app.get('/csv', (req, res) => {
         var url = process.env.MONGODB_URL;
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
           if (err) reject(err);
-          var dbo = db.db("crypto_sentiment");
+          var dbo = db.db(process.env.MONGODB_NAME);
           dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}}).toArray(function(err, result) {
             if (err) reject(err);
             db.close();
@@ -64,7 +64,7 @@ app.get('/json', (req, res) => {
         var url = process.env.MONGODB_URL;
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
           if (err) reject(err);
-          var dbo = db.db("crypto_sentiment");
+          var dbo = db.db(process.env.MONGODB_NAME);
           dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}}).toArray(function(err, result) {
             if (err) reject(err);
             db.close();
@@ -94,8 +94,8 @@ app.get('/json', (req, res) => {
     });
 });
 
-  // request handler
-  app.get('/coin/:q', (req, res) => {
+// request handler
+app.get('/coin/:q', (req, res) => {
  
     // validate parameters
      const schema = {
@@ -111,7 +111,7 @@ app.get('/json', (req, res) => {
         var url = process.env.MONGODB_URL;
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
           if (err) reject(err);
-          var dbo = db.db("crypto_sentiment");
+          var dbo = db.db(process.env.MONGODB_NAME);
           var query = { query: result.value.q, timestamp : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}};
           console.log(query);
           dbo.collection("articles").find(query).toArray(function(err, result) {
@@ -133,7 +133,8 @@ app.get('/json', (req, res) => {
     return;
 
  });
-
+ 
+ // render HTML (deprecated)
  function renderHTML(items) {
     console.log("renderHTML");
     var totalScore = 0;
@@ -157,11 +158,12 @@ app.get('/json', (req, res) => {
     return html;
  }
 
+ // delete coin entries from db
  function deleteCoin(coin) {
     var url = process.env.MONGODB_URL;
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
     if (err) throw err;
-       var dbo = db.db("crypto_sentiment");
+       var dbo = db.db(process.env.MONGODB_NAME);
        var myquery = { query: coin };
        dbo.collection("articles").deleteMany(myquery, function(err, obj) {
          if (err) throw err;
@@ -171,8 +173,12 @@ app.get('/json', (req, res) => {
      });   
  }
 
+ // launch webserver
  app.listen(3000, () => console.log('Listening on port 3000'));
  
- collector.collect();
-
+ // start collector
+ if(!process.env.DISABLE_COLLECTOR) {
+    collector.collect();
+ }
+ 
 
