@@ -72,11 +72,12 @@ d3.json("/json", function(error, data) {
         .style("font-weight", "bold")
         .style("class", ".bubble_hover")
         .text(function(d) {
-            if(!d.data.sentiment) return d.data.id.replace(" ", "\n");
-            else return;
+            if(!d.data.sentiment) {
+                return d.data.id.replace(" ", "\n") + " (" + d.data.diff + "%)";
+            } else return;
         })
         .style("font-size", function(d) {
-           var fs = parseInt(Math.min(2 * d.r, (2 * d.r - 8) / 6));
+           var fs = parseInt(Math.min(2 * d.r, (2 * d.r - 8) / 8));
            fs = fs<10?10:fs;
            return fs + "px";
         });
@@ -94,5 +95,7 @@ function hovered(hover) {
     }
   };
 }
+
+
 
 </script>
