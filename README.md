@@ -26,11 +26,9 @@ Check out the example -> https://crypto-sentiment.now.sh
 
 1. Create a file '''.env''' in the directory with the following content:
 
-`NEWS_API_KEY=[your NewsAPI key]` (get your key at https://newsapi.org/)
-
-`MONGODB_URL=mongodb://[your db user]:[your db password]@[your db URL]` 
-
-`MONGODB_NAME=[your db name]` 
+`NEWS_API_KEY=[your NewsAPI key]
+MONGODB_URL=mongodb://[your db user]:[your db password]@[your db URL]
+MONGODB_NAME=[your db name]` 
 
 2. `nmp install`
 
