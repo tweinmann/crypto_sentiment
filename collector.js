@@ -105,11 +105,7 @@ function loadRates(coins) {
             if(JSON.parse(input)[coin.symbol]) current = JSON.parse(input)[coin.symbol].USD;
             rates[coin.name] = {"current": current, "past": past};
             console.log("Loading rates for " + coin.name + " -> " + JSON.stringify(rates[coin.name]));
-            if(coins.length > 0) {
-                return loadRates(coins);
-            } else {
-                return;
-            }
+            if(coins.length > 0) setTimeout(loadRates, 2000, coins);
         }).catch((err) => {
             console.log(err);
         });

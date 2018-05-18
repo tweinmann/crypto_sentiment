@@ -11,7 +11,7 @@ require('dotenv').config();
 const app = express();
 
 // logger
-app.use(morgan('combined')); 
+//app.use(morgan('combined')); 
 
 // request handler
 app.get('/', function(req, res) {
