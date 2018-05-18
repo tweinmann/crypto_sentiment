@@ -19,7 +19,7 @@ require('dotenv').config();
 const coinmarketcap = new Coinmarketcap();
 const newsapi = new NewsAPI(process.env.NEWS_API_KEY);
 
-// main function 
+// schedule data collector 
 exports.collectData = function collectData() {
 
     // get coin listing from coinmarketcap
@@ -39,11 +39,12 @@ exports.collectData = function collectData() {
  
 }
 
+// schedule rate updates
 exports.updateRates = function updateRates() {
 
     // load rates
     loadCoins().then((input) => {
-        loadRates(input);
+        return loadRates(input);
     }).then((input) => {
         // wait 10 minutes seconds and restart
         setTimeout(() => {updateRates()}, 1000 * 60 * 10);
@@ -73,6 +74,7 @@ exports.getArticles = function getArticles() {
 // rate cache
 var rates = {};
 
+// get rates from cache
 exports.getRates = function getRates() {
     return rates;
 }
@@ -100,12 +102,22 @@ function loadRates(coins) {
         var past,current;
         return requestPromise("https://min-api.cryptocompare.com/data/pricehistorical?fsym=" + coin.symbol + "&tsyms=USD&ts=" + moment().add(-4, 'week').unix()).then((input) => {
             if(JSON.parse(input)[coin.symbol]) past = JSON.parse(input)[coin.symbol].USD;
-            return requestPromise("https://min-api.cryptocompare.com/data/pricehistorical?fsym=" + coin.symbol + "&tsyms=USD&ts=" + moment().unix());
+            return requestPromise("https://min-api.cryptocompare.com/data/price?fsym=" + coin.symbol + "&tsyms=USD");
         }).then((input) => {
-            if(JSON.parse(input)[coin.symbol]) current = JSON.parse(input)[coin.symbol].USD;
-            rates[coin.name] = {"current": current, "past": past};
-            console.log("Loading rates for " + coin.name + " -> " + JSON.stringify(rates[coin.name]));
-            if(coins.length > 0) setTimeout(loadRates, 2000, coins);
+            return new Promise((resolve, reject) => {
+                current = JSON.parse(input).USD;
+                rates[coin.name] = {"current": current, "past": past};
+                console.log("Loaded rates for " + coin.name + " -> " + JSON.stringify(rates[coin.name]));
+                // sleep 1 second
+                setTimeout(resolve, 1000);
+            });
+        }).then(() => {
+            if(coins.length > 0) {
+                return loadRates(coins);
+            } else {
+                console.log("Processing articles finished!");
+                return;
+            }
         }).catch((err) => {
             console.log(err);
         });
