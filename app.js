@@ -19,6 +19,20 @@ app.get('/', function(req, res) {
 });
 
 // request handler
+app.get('/recentArticles', function(req, res) {
+    collector.getArticles().then((input) => {  
+        if(input.length>10) {
+            input.splice(10, input.length - 1);
+        }     
+        res.send(JSON.stringify(input));
+    }).catch((error) => {
+        console.log(error);
+        res.sendStatus(500);
+    });
+    return;
+});
+
+// request handler
 app.get('/json', (req, res) => {
     collector.getArticles().then((input) => {       
         res.send(JSON.stringify(toD3JSON(input)));

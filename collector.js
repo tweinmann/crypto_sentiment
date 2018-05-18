@@ -62,7 +62,7 @@ exports.getArticles = function getArticles() {
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
             if (err) reject(err);
             var dbo = db.db(process.env.MONGODB_NAME);
-            dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}}).toArray((err, result) => {
+            dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}}).sort([['_id', -1]]).toArray((err, result) => {
                 if (err) reject(err);
                 db.close();
                 resolve(result);
@@ -71,7 +71,7 @@ exports.getArticles = function getArticles() {
     });    
 }
 
-// rate cache
+// cache objects
 var rates = {};
 
 // get rates from cache
@@ -115,7 +115,7 @@ function loadRates(coins) {
             if(coins.length > 0) {
                 return loadRates(coins);
             } else {
-                console.log("Processing articles finished!");
+                console.log("Processing rates finished!");
                 return;
             }
         }).catch((err) => {
