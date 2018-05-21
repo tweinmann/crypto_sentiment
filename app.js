@@ -81,5 +81,5 @@ if(!process.env.DISABLE_COLLECTOR) {
 }
 
 // schedule rate updates
-collector.updateRates();
+//collector.updateRates();
 

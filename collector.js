@@ -19,16 +19,27 @@ require('dotenv').config();
 const coinmarketcap = new Coinmarketcap();
 const newsapi = new NewsAPI(process.env.NEWS_API_KEY);
 
+// coins in global scope
+var coins = [];
+
 // schedule data collector 
 exports.collectData = function collectData() {
 
     // get coin listing from coinmarketcap
     loadCoins().then((input) => {
+
+        // store coins in global scope
+        coins = input;
+        coins.sort((a,b) => {
+            if(a.name.split(" ").length > b.name.split(" ").length) return -1;
+            else return 1;
+        });
+
         // get articles from newsapi
         return loadArticles(input);
     }).then((input) => {
         // process all articles
-        return calculateSentiment(input);
+        return calculateSentiment(input, coins);
     }).then((input) => {
         // wait 4 hours and restart
         setTimeout(() => {collectData()}, 1000 * 3600 * 4);
@@ -62,7 +73,7 @@ exports.getArticles = function getArticles() {
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
             if (err) reject(err);
             var dbo = db.db(process.env.MONGODB_NAME);
-            dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}}).sort([['_id', -1]]).toArray((err, result) => {
+            dbo.collection("articles_dev").find({"timestamp" : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}}).sort([['_id', -1]]).toArray((err, result) => {
                 if (err) reject(err);
                 db.close();
                 resolve(result);
@@ -86,7 +97,7 @@ function getCoins() {
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
             if (err) reject(err);
             var dbo = db.db(process.env.MONGODB_NAME);
-            dbo.collection("articles").distinct("coin", (err, result) => {
+            dbo.collection("articles_dev").distinct("coin", (err, result) => {
                 if (err) reject(err);
                 db.close();
                 resolve(result);
@@ -172,7 +183,7 @@ function calculateSentiment(articles) {
             MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                 if (err) reject(err);
                 var dbo = db.db(process.env.MONGODB_NAME);
-                dbo.collection("articles").findOne({url: article.url, coin: article.coin}, (err, res) => {
+                dbo.collection("articles_dev").findOne({url: article.url}, (err, res) => {
                     if (err) reject(err);
                     db.close();
                     if (!res) resolve(false);
@@ -190,13 +201,14 @@ function calculateSentiment(articles) {
                         if(!err) {
                             var content = extractor(body);
                             var result = sentiment.analyze(content.text);
+                            var coinWeighting = countCoinOccurences(content.text, coins);
                             score = result.score;
                             comparative = result.comparative;
                         } else {
                             // no sentiment calculated, but proceed
                             console.log(err);
                         }
-                        resolve({'timestamp':article.publishedAt,'coin':article.coin,'symbol':article.symbol,'score':score,'comparative':comparative,'title':article.title,'url':article.url,'snippet':article.description,'source':article.source.id});          
+                        resolve({'timestamp':article.publishedAt,'coins':coinWeighting,'score':score,'comparative':comparative,'title':article.title,'url':article.url,'snippet':article.description,'source':article.source.id});          
                     });
                 });
             } else {
@@ -210,12 +222,12 @@ function calculateSentiment(articles) {
                     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                         if (err) reject(err);
                         var dbo = db.db(process.env.MONGODB_NAME);
-                        dbo.collection("articles").updateOne({url: newItem.url,coin: newItem.coin}, {$set:newItem}, {upsert: true}, (err, res) =>{
+                        dbo.collection("articles_dev").updateOne({url: newItem.url,coin: newItem.coin}, {$set:newItem}, {upsert: true}, (err, res) =>{
                             if (err) {
                                 console.log(err);
                                 reject(err);
                             }
-                            console.log((res.result.upserted?"Added - ":"Skipped - ") + newItem.url + " article -> (coin: " + newItem.coin + ", score: " + newItem.score + ")");
+                            console.log((res.result.upserted?"Added - ":"Skipped - ") + newItem.url + " article -> (query: " + article.coin + ", coins: " + JSON.stringify(newItem.coins) + ", score: " + newItem.score + ")");
                             db.close();
                             resolve(newItem);
                         });
@@ -267,3 +279,25 @@ function loadCoins() {
     });
 }
 
+exports.loadCoins = loadCoins;
+
+function countCoinOccurences(text, coins = []) {
+    var result = {};
+    coins.forEach((coin) => {
+        var count = 0;
+        var nameRegex = new RegExp(coin.name, "gi");
+        var nameCount = (text.match(nameRegex) || []).length;
+        if(nameCount) {
+            text =  text.replace(nameRegex, "___");
+        }
+        var symbolRegex = new RegExp(coin.symbol, "g");                
+        var symbolCount = (text.match(symbolRegex) || []).length;
+        if(nameCount > symbolCount) {
+            count = nameCount;
+        } else {
+            count = symbolCount;
+        }
+        if(count) result[coin.symbol] = count;
+    });
+    return result;
+}
