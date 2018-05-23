@@ -4,12 +4,12 @@ Tiny sample app that provides an "at a glance" view of news article sentiments p
 
 On a regular interval it does the following:
 
-1. Get top 100 coins from Coinmarketcap
-2. Get news articles from "crypto-coins-news" for past 7 days via https://newsapi.org
+1. Get top 100 coins from https://www.coinmarketcap.com
+2. Get news articles from https://www.ccn.com/ for past 7 days via https://newsapi.org
 3. For each article ...
     1. Get full HTML from article source URL
     2. Extract plain text (strip layout, adds, etc)
-    3. Calculate weighting of coins from top 100 list (count occurence of coin name & symbol)
+    3. Calculate weighting of coins from top 100 list (count occurence of coin name & symbol in plain text)
     4. Calculate sentiment based on AFINN words
     5. Store result in db
 
