@@ -10,6 +10,7 @@ text {
 </style>
 <svg width="960" height="960"><g transform="translate(1,1)"></g></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 
 var svg = d3.select("svg"),
@@ -46,7 +47,7 @@ d3.json("/json", function(error, data) {
         .style("fill", function(d) { 
             var background = "rgb(255, 255, 255)"; 
             if(d.data.id == "coins") return;
-            var score = d.data.value;
+            var score = d.data.value * 10;
             if(score == 'n/a') {
                 background = "rgb(200, 200, 200)"; 
             } else if (d.data.sentiment == "neg") {
@@ -61,7 +62,7 @@ d3.json("/json", function(error, data) {
             else return 0.5;
         })
         .on("click", function(d) {
-            location.href = d.data.url;
+            if(d.data.sentiment) location.href = d.data.url;
         })
         .on("mouseover", hovered(true))
         .on("mouseout", hovered(false));
@@ -83,8 +84,9 @@ d3.json("/json", function(error, data) {
         });
 
     node.append("title")
-        .text(function(d) { return d.data.url });
-
+        .text(function(d) { 
+            if(d.data.sentiment) return d.data.url + " (" + d.data.value + ")"
+        });
 
 });
 
@@ -96,7 +98,20 @@ function hovered(hover) {
     }
   };
 }
+/*
+$(document).ready(function(){
 
+    $.get("/recentArticles", function(data, status){
+        var articles = JSON.parse(data);
+        articles.forEach((article) => {
+            console.log(article);
+            $("#list").append("<p style='font: 15px arial'>" + article.title + "</p>");
+        });
+    });
 
-
+});
+*/
 </script>
+<body>
+    <div id="list"></div>
+</body>
