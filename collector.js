@@ -27,23 +27,17 @@ exports.collectData = function collectData() {
 
     // get coin listing from coinmarketcap
     loadCoins().then((input) => {
-
         // store coins in global scope
         coins = input;
-        coins.sort((a,b) => {
-            if(a.name.split(" ").length > b.name.split(" ").length) return -1;
-            else return 1;
-        });
-
         // get articles from newsapi
-        return loadArticles(input);
+        return loadArticles();
     }).then((input) => {
         // process all articles
         return calculateSentiment(input, coins);
     }).then((input) => {
         // wait 4 hours and restart
         setTimeout(() => {collectData()}, 1000 * 3600 * 4);
-        console.log("Collecting again in 4 hours ...")
+        console.log("Collecting new articles in 4 hours ...")
     }).catch((err) => {
         console.log(err);
     });
@@ -54,9 +48,9 @@ exports.collectData = function collectData() {
 exports.updateRates = function updateRates() {
 
     // load rates
-    loadCoins().then((input) => {
-        return loadRates(input);
-    }).then((input) => {
+    loadRates().then((input) => {
+        // store rates in global scope
+        rates = input;
         // wait 10 minutes seconds and restart
         setTimeout(() => {updateRates()}, 1000 * 60 * 10);
         console.log("Updating rates in 10 minutes ...")
@@ -73,7 +67,7 @@ exports.getArticles = function getArticles() {
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
             if (err) reject(err);
             var dbo = db.db(process.env.MONGODB_NAME);
-            dbo.collection("articles_dev").find({"timestamp" : {"$gte": moment().add(-4, 'week').format('YYYY-MM-DD')}}).sort([['_id', -1]]).toArray((err, result) => {
+            dbo.collection("articles_dev").find({"timestamp" : {"$gte": moment().add(-1, 'week').toDate().getTime()}}).sort([['_id', -1]]).toArray((err, result) => {
                 if (err) reject(err);
                 db.close();
                 resolve(result);
@@ -90,85 +84,28 @@ exports.getRates = function getRates() {
     return rates;
 }
 
-// get distinct coin list
-function getCoins() {
-    return new Promise((resolve, reject) => {
-        var url = process.env.MONGODB_URL;
-        MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
-            if (err) reject(err);
-            var dbo = db.db(process.env.MONGODB_NAME);
-            dbo.collection("articles_dev").distinct("coin", (err, result) => {
-                if (err) reject(err);
-                db.close();
-                resolve(result);
-            });
-        });
-    });    
-}
-
-// load market data
-function loadRates(coins) {
-    if(coins.length > 0) {
-        var coin = coins.pop();
-        var past,current;
-        return requestPromise("https://min-api.cryptocompare.com/data/pricehistorical?fsym=" + coin.symbol + "&tsyms=USD&ts=" + moment().add(-4, 'week').unix()).then((input) => {
-            if(JSON.parse(input)[coin.symbol]) past = JSON.parse(input)[coin.symbol].USD;
-            return requestPromise("https://min-api.cryptocompare.com/data/price?fsym=" + coin.symbol + "&tsyms=USD");
-        }).then((input) => {
-            return new Promise((resolve, reject) => {
-                current = JSON.parse(input).USD;
-                rates[coin.name] = {"current": current, "past": past};
-                console.log("Loaded rates for " + coin.name + " -> " + JSON.stringify(rates[coin.name]));
-                // sleep 1 second
-                setTimeout(resolve, 1000);
-            });
-        }).then(() => {
-            if(coins.length > 0) {
-                return loadRates(coins);
-            } else {
-                console.log("Processing rates finished!");
-                return;
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
-    }      
-}
-
 // load articles from newsapi
-function loadArticles(coins) {
+function loadArticles(articles = [], page = 1) {
     return new Promise((resolve, reject) => {
-        var result = [];
-        coins.forEach((coin) => {
-            result.push(       
-                new Promise((resolve, reject) => {
-                    newsapi.v2.everything({
-                        q: '"' + coin.name + '"',
-                        language: 'en',
-                        sources: 'crypto-coins-news',
-                        pageSize: 100,
-                        from: moment().add(-1, 'week').format('YYYY-MM-DD'),
-                    }).then((response) => {
-                        var articles = response.articles;
-                        articles.forEach((article) => {
-                            article.coin = coin.name;
-                            article.symbol = coin.symbol;
-                        });
-                        resolve(articles);
-                    }).catch((err) => {
-                        reject(err);
-                    });
-                })
-            );
-        }); 
-        resolve(Promise.all(result));
+        newsapi.v2.everything({
+ //           q: 'cryptocurrency OR blockchain',
+            sources: 'crypto-coins-news',
+            language: 'en',
+            pageSize: 100,
+            from: moment().add(-4, 'weeks').format('YYYY-MM-DD'),
+            page: page
+        }).then((response) => {
+//            console.log("Loading article metadata " + (page-1) * 100 + " - " + (page * 100<response.totalResults?page *100:response.totalResults) + " of " + response.totalResults + " articles ...");
+            console.log("Loading article metadata - " + (response.totalResults - ((page-1) * 100)) + " to go");
+            resolve(response.articles);
+        }).catch((err) => {
+            reject(err);
+        });
     }).then((input) => {
         // merge arrays of articles
-        var articles = [];
-        input.forEach((item) => {
-            articles = articles.concat(item);
-        });
-        console.log("Found " + articles.length + " articles ...");
+        articles = articles.concat(input);
+        if(input.length == 100) return loadArticles(articles, page + 1);
+        console.log("Loading article metadata - finished!");
         return articles;
     });
 }
@@ -195,20 +132,17 @@ function calculateSentiment(articles) {
                 // calculate sentiment
                 return new Promise((resolve, reject) => {
                     request(article.url, (err, res, body) => {
-                        var sentiment = new Sentiment();
-                        var score = "n/a";
-                        var comparative = "n/a";
                         if(!err) {
                             var content = extractor(body);
+                            var sentiment = new Sentiment();
                             var result = sentiment.analyze(content.text);
-                            var coinWeighting = countCoinOccurences(content.text, coins);
-                            score = result.score;
-                            comparative = result.comparative;
+                            var coinWeighting = calculateCoinWeighting(content.text, coins);
+                            resolve({'timestamp':Date.parse(article.publishedAt),'weighting':coinWeighting,'score':result.score,'comparative':result.comparative,'title':article.title,'url':article.url,'source':article.source.id});
                         } else {
                             // no sentiment calculated, but proceed
-                            console.log(err);
+                            console.log("Failed to fetch article -> " + article.url);
                         }
-                        resolve({'timestamp':article.publishedAt,'coins':coinWeighting,'score':score,'comparative':comparative,'title':article.title,'url':article.url,'snippet':article.description,'source':article.source.id});          
+                        resolve(null);
                     });
                 });
             } else {
@@ -222,12 +156,12 @@ function calculateSentiment(articles) {
                     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                         if (err) reject(err);
                         var dbo = db.db(process.env.MONGODB_NAME);
-                        dbo.collection("articles_dev").updateOne({url: newItem.url,coin: newItem.coin}, {$set:newItem}, {upsert: true}, (err, res) =>{
+                        dbo.collection("articles_dev").updateOne({url: newItem.url}, {$set:newItem}, {upsert: true}, (err, res) =>{
                             if (err) {
                                 console.log(err);
                                 reject(err);
                             }
-                            console.log((res.result.upserted?"Added - ":"Skipped - ") + newItem.url + " article -> (query: " + article.coin + ", coins: " + JSON.stringify(newItem.coins) + ", score: " + newItem.score + ")");
+                            console.log((res.result.upserted?"Added - ":"Skipped - ") + newItem.url + " article -> " + JSON.stringify(newItem));
                             db.close();
                             resolve(newItem);
                         });
@@ -237,16 +171,16 @@ function calculateSentiment(articles) {
                 return;
             }
         }).then((item) => {
-            if(articles.length%50==0) console.log("Processing articles -> " + articles.length + " to go ...");
+            if(articles.length%50==0) console.log("Calculating article sentiment - " + articles.length + " to go");
             if(articles.length > 0) {
                 return calculateSentiment(articles);
             } else {
-                console.log("Processing articles finished!");
+                console.log("Calculating article sentiment - finished!");
                 return;
             }
         });  
     } else {
-        return result;
+        return null;
     }
     
 }
@@ -268,29 +202,44 @@ function deleteCoin(coin) {
     });
 }
 
+// load coin data from coinmarketcap
 function loadCoins() {
-    return coinmarketcap.ticker("", "", 25).then((input) => {
+    return coinmarketcap.ticker("", "", 100).then((input) => {
         var result = [];
         input.forEach((item) => {
-            result.push({"name": item.name.toLowerCase(), "symbol":item.symbol});
+            result.push({"name": item.name.toLowerCase().replace(/[^\w\s]/gi, '_'), "symbol":item.symbol.replace(/[^\w\s]/gi, '_')});
         });
-        console.log("Fetched top 25 coins -> " + JSON.stringify(result));
         return result;
     });
 }
 
-exports.loadCoins = loadCoins;
+// load rate data from coinmarketcap
+function loadRates() {
+    return coinmarketcap.ticker("", "").then((input) => {
+        var result = {};
+        input.forEach((item) => {
+            result[item.symbol.replace(/[^\w\s]/gi, '_')] = item.percent_change_7d;
+        });
+        return result;
+    });    
+}
 
-function countCoinOccurences(text, coins = []) {
+// count occurences of coins in text
+function calculateCoinWeighting(text, coins = []) {
     var result = {};
+    // order by number of spaces (this is to catch e.g. "Bitcoin Cash" before "Bitcoin")
+    coins.sort((a,b) => {
+        if(a.name.split(" ").length > b.name.split(" ").length) return -1;
+        else return 1;
+    });
     coins.forEach((coin) => {
         var count = 0;
-        var nameRegex = new RegExp(coin.name, "gi");
+        var nameRegex = new RegExp(" " + coin.name + " ", "gi");
         var nameCount = (text.match(nameRegex) || []).length;
         if(nameCount) {
             text =  text.replace(nameRegex, "___");
         }
-        var symbolRegex = new RegExp(coin.symbol, "g");                
+        var symbolRegex = new RegExp(" " + coin.symbol + " ", "gi");                
         var symbolCount = (text.match(symbolRegex) || []).length;
         if(nameCount > symbolCount) {
             count = nameCount;
