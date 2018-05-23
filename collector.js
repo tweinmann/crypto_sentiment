@@ -36,8 +36,8 @@ exports.collectData = function collectData() {
         return calculateSentiment(input, coins);
     }).then((input) => {
         // wait 4 hours and restart
-        setTimeout(() => {collectData()}, 1000 * 3600 * 4);
-        console.log("Collecting new articles in 4 hours ...")
+        setTimeout(() => {collectData()}, 1000 * 3600);
+        console.log("Collecting new articles in 1 hour ...")
     }).catch((err) => {
         console.log(err);
     });
@@ -92,7 +92,7 @@ function loadArticles(articles = [], page = 1) {
             sources: 'crypto-coins-news',
             language: 'en',
             pageSize: 100,
-            from: moment().add(-4, 'weeks').format('YYYY-MM-DD'),
+            from: moment().add(-1, 'weeks').format('YYYY-MM-DD'),
             page: page
         }).then((response) => {
             console.log("Loading article metadata - " + (response.totalResults - ((page-1) * 100)) + " to go");
