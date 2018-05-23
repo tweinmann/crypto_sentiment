@@ -67,7 +67,7 @@ exports.getArticles = function getArticles() {
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
             if (err) reject(err);
             var dbo = db.db(process.env.MONGODB_NAME);
-            dbo.collection("articles_dev").find({"timestamp" : {"$gte": moment().add(-1, 'week').toDate().getTime()}}).sort([['_id', -1]]).toArray((err, result) => {
+            dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-1, 'week').toDate().getTime()}}).sort([['_id', -1]]).toArray((err, result) => {
                 if (err) reject(err);
                 db.close();
                 resolve(result);
@@ -95,7 +95,6 @@ function loadArticles(articles = [], page = 1) {
             from: moment().add(-4, 'weeks').format('YYYY-MM-DD'),
             page: page
         }).then((response) => {
-//            console.log("Loading article metadata " + (page-1) * 100 + " - " + (page * 100<response.totalResults?page *100:response.totalResults) + " of " + response.totalResults + " articles ...");
             console.log("Loading article metadata - " + (response.totalResults - ((page-1) * 100)) + " to go");
             resolve(response.articles);
         }).catch((err) => {
@@ -120,7 +119,7 @@ function calculateSentiment(articles) {
             MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                 if (err) reject(err);
                 var dbo = db.db(process.env.MONGODB_NAME);
-                dbo.collection("articles_dev").findOne({url: article.url}, (err, res) => {
+                dbo.collection("articles").findOne({url: article.url}, (err, res) => {
                     if (err) reject(err);
                     db.close();
                     if (!res) resolve(false);
@@ -156,7 +155,7 @@ function calculateSentiment(articles) {
                     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
                         if (err) reject(err);
                         var dbo = db.db(process.env.MONGODB_NAME);
-                        dbo.collection("articles_dev").updateOne({url: newItem.url}, {$set:newItem}, {upsert: true}, (err, res) =>{
+                        dbo.collection("articles").updateOne({url: newItem.url}, {$set:newItem}, {upsert: true}, (err, res) =>{
                             if (err) {
                                 console.log(err);
                                 reject(err);
