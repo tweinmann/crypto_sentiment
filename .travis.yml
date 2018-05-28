@@ -2,8 +2,8 @@ language: node_js
 node_js:
 - node
 cache: npm
-script: npm run deploy
-after_script: npm run alias
+script: npm run now-deploy
+after_script: npm run now-scale 
 env:
   global:
     secure: cXVxLffx37+Vm0/xYQsdT5RXqyfLcICwgNBcQcnx2792Fa9Li59KHyD8BPYyYJ8HXvuNLsrxjwl7q+kjIF/hR/fesPUHR9okTqBO3kryKvDIQRplQ1e1cbwVVr8jOGK+QTxdWWiSh5GirMeAtKHMck06G5QwZ7UFZAEytCIUSuFEpTlS+48zxw364nG4r66RQMoQRhrJ41HX/wr90wMoJnr+fDxIsRFeEqMKfw90pnZ436QXI9CUFc3XgkVMKwyFzpxETftLEyEk1zOX3sCfhnZCsum4Ez13hpzrdzTVISgtpUxrk/k/3hchux0FZlDXgJB/7pzRwgrJ8kBaEWeDdzrRc70k3DYh3As6PierLiUNpdUtUnIav5vi//+ZQCHrMVSd7IhYf2Mp9VK8P2nm669JP6GdsdQhdPW8pbtkYPJLkZMQ/SfQFFpLJewMq5ZYTirI5h5R7lUch6CtNW+EZps4pNPLtWudd3l6LYkZli44jwKZmaJgI9xlyYFN4sIG9rrJd4bbWdITwbBIxZsy3Z7eq/aKiT4R4y2wLQHI4Xv07Rvz8/FNklYrHJvrI6Aq5iwLdisb2PHzhwNIhxtclLVS/vCaENPBXT5j8jZp1tVyND0KXJsd30jZ+W1kbRhfVtpzm8PDB1Gm49lG32vPU7UzNRh1c6ryvUnEwtLSMGU=
