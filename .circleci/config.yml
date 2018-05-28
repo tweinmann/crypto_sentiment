@@ -13,6 +13,6 @@ jobs:
       - run: sudo yarn global add now now-realias now-no-alias
 
       - run: now -t ${NOW_TOKEN} --name=crypto-sentimeter --npm --public -e NEWS_API_KEY=@news-api-key -e MONGODB_URL=@mongo-db-url -e MONGODB_NAME=crypto_sentiment
-      - run: now-realias
+      - run: now-realias crypto-sentimeter
       - run: now rm -t ${NOW_TOKEN} $(now-no-alias | jq -r '.[] | .uid') -y
       - run: now scale -t ${NOW_TOKEN} crypto-sentimeter.now.sh bru 1 1
