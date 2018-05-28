@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node app.js",
     "test": "nodemon --inspect app.js",
-    "now-start": "node app.js"
+    "now-start": "node app.js",
+    "deploy": "now -t $NOW_TOKEN --name=crypto-sentimeter --npm --public -e NEWS_API_KEY=@news-api-key -e MONGODB_URL=@mongo-db-url -e MONGODB_NAME=crypto_sentiment",
+    "alias": "now alias --token=$NOW_TOKEN"
   },
   "repository": {
     "type": "git",
@@ -32,5 +34,9 @@
     "request-promise": "^4.2.2",
     "sentiment": "^5.0.0",
     "util": "^0.10.3"
-  }
+  },
+  "now": {
+    "name": "crypto_sentimeter",
+    "alias": "crypto-sentimeter"
+    }
 }
