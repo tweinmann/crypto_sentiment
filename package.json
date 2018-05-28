@@ -38,5 +38,8 @@
   "now": {
     "name": "crypto_sentimeter",
     "alias": "crypto-sentimeter"
-    }
+  },
+  "devDependencies": {
+    "now": "^11.1.15"
+  }
 }
