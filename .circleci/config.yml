@@ -9,6 +9,8 @@ jobs:
       - checkout
 
       - run: npm install
+      - run: sudo apt-get install jq
+      - run: sudo yarn global add now now-realias now-no-alias
 
       - run: now build -t ${NOW_TOKEN} --name=crypto-sentimeter --npm --public
       - run: now-realias
