@@ -12,6 +12,6 @@ jobs:
       - run: sudo apt-get install jq
       - run: sudo yarn global add now now-realias now-no-alias
 
-      - run: now build -t ${NOW_TOKEN} --name=crypto-sentimeter --npm --public
+      - run: now -t ${NOW_TOKEN} --name=crypto-sentimeter --npm --public
       - run: now-realias
       - run: now rm -t ${NOW_TOKEN} $(now-no-alias | jq -r '.[] | .uid') -y
