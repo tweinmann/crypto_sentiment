@@ -8,7 +8,7 @@ text {
 }
 
 </style>
-<svg width="960" height="960"><g transform="translate(1,1)"></g></svg>
+<svg width="960" height="960" style="text-align: center"><g transform="translate(1,1)"></g></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
@@ -45,21 +45,40 @@ d3.json("/json", function(error, data) {
         .attr("id", function(d) { return "node-" + d.data.id; })
         .attr("r", function(d) { return d.r; })
         .style("fill", function(d) { 
+            if(d.data.id == "coins") return;
+            var colorScale = parseInt((new Date().getTime() - new Date(d.data.timestamp).getTime()) / (1000 * 60 * 60 * 24));
+            var background = "rgb(255, 255, 255)";
+            if (d.data.sentiment == "neg") {
+                background = "rgb(255, " + (colorScale*40) + ", " + (colorScale*40) + ")"; 
+            } else if (d.data.sentiment == "pos") {
+                background = "rgb(" + (colorScale*40) + ", 255, " + (colorScale*40) + ")"; 
+            }          
+            return background;
+/*
             var background = "rgb(255, 255, 255)"; 
             if(d.data.id == "coins") return;
             var score = d.data.value * 10;
             if(score == 'n/a') {
                 background = "rgb(200, 200, 200)"; 
             } else if (d.data.sentiment == "neg") {
-                background = "rgb(255, " + (255-score*10) + ", " + (255-score*10) + ")"; 
+                background = "rgb(255, " + (255-score*5) + ", " + (255-score*5) + ")"; 
             } else if (d.data.sentiment == "pos") {
-                background = "rgb(" + (255-score*10) + ", 255, " + (255-score*10) + ")"; 
+                background = "rgb(" + (255-score*5) + ", 255, " + (255-score*5) + ")"; 
             }          
             return background;
-          })
+*/
+        })
         .style("fill-opacity", function(d) {
             if(!d.data.sentiment) return 1;
             else return 0.5;
+        })
+        .attr("stroke-width", function(d) {
+            if(!d.data.sentiment) return "5px";
+            return;
+        })
+        .attr("stroke", function(d) {
+            if(!d.data.sentiment) return "rgb(250,250,250)";
+            return;
         })
         .on("click", function(d) {
             if(d.data.sentiment) location.href = d.data.url;
@@ -98,19 +117,18 @@ function hovered(hover) {
     }
   };
 }
-/*
+
 $(document).ready(function(){
 
     $.get("/recentArticles", function(data, status){
         var articles = JSON.parse(data);
         articles.forEach((article) => {
-            console.log(article);
-            $("#list").append("<p style='font: 15px arial'>" + article.title + "</p>");
+            $("#list").append('<div style="font: 15px arial; text-align: center"><a href="' + article.url + '">' + article.title + '</a></div>');
         });
     });
 
 });
-*/
+
 </script>
 <body>
     <div id="list"></div>

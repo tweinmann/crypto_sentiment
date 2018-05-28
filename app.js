@@ -44,7 +44,7 @@ app.get('/json', (req, res) => {
 });
 
 // convert articles to D3 digestable JSON
-function toD3JSON(articles, minCount = 3) {
+function toD3JSON(articles, minCount = 2) {
     var coins = {};
     articles.forEach((item) => {
         Object.keys(item.weighting).forEach((coin) => {
@@ -61,7 +61,7 @@ function toD3JSON(articles, minCount = 3) {
                 totalWeight += item.weighting[key];
             });
             var score = parseInt((100 / totalWeight) * item.weighting[coin] / 100 * Math.abs(item.score)); 
-            temp.push({"id": coin + "." + item._id, "url": item.url, "value": score, "sentiment":(item.score>0?"pos":"neg"), "current": item.current, "past": item.past});
+            temp.push({"id": coin + "." + item._id, "url": item.url, "value": score, "sentiment":(item.score>0?"pos":"neg"), "current": item.current, "past": item.past, "timestamp": item.timestamp});
         });       
         var diff = collector.getRates()[coin];
         if(temp.length >= minCount) output.children.push( {"id":coin, "diff": parseInt(diff), "children": temp});
