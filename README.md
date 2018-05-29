@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tweinmann/crypto_sentiment.svg?branch=master)](https://travis-ci.org/freeCodeCamp/how-to-contribute-to-open-source)
+[![Build Status](https://travis-ci.org/tweinmann/crypto_sentiment?branch=master)](https://travis-ci.org/tweinmann/crypto_sentiment?branch=master)
 
 # crypto sentiment
 
