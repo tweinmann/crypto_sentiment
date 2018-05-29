@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tweinmann/crypto_sentiment?branch=master)](https://travis-ci.org/tweinmann/crypto_sentiment?branch=master)
+[![Build Status](https://travis-ci.org/tweinmann/crypto_sentiment.svg?branch=master)](https://travis-ci.org/tweinmann/crypto_sentiment)
 
 # crypto sentiment
 
