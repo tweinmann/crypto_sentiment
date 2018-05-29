@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tweinmann/crypto_sentiment.svg?branch=master)](https://travis-ci.org/freeCodeCamp/how-to-contribute-to-open-source)
+
 # crypto sentiment
 
 Tiny sample app that provides an "at a glance" view of news article sentiments per crypto currency. 
