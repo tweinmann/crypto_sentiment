@@ -15,7 +15,7 @@ On a regular interval it does the following:
     4. Calculate sentiment based on AFINN words
     5. Store result in db
 
-The result is visualized using D3 pack. Each article is rendered as a bubble. Negative sentiment is shown in red, positive sentiment in green. The bigger the bubble, the higher the score. 
+The result is visualized using D3 pack. Each article is rendered as a bubble (click to get to the original article). Negative sentiment is shown in red, positive sentiment in green. The bigger the bubble, the higher the score. The older the article, the paler the color.
 
 Check out the example -> https://crypto-sentiment.now.sh
 
