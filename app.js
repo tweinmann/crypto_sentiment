@@ -44,7 +44,7 @@ app.get('/json', (req, res) => {
 });
 
 // convert articles to D3 digestable JSON
-function toD3JSON(articles, minCount = 0) {
+function toD3JSON(articles, minCount = 2) {
     var coins = {};
     articles.forEach((item) => {
         Object.keys(item.weighting).forEach((coin) => {
