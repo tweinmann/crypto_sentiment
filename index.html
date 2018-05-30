@@ -53,21 +53,7 @@ d3.json("/json", function(error, data) {
             } else if (d.data.sentiment == "pos") {
                 background = "rgb(" + (colorScale*30) + ", 255, " + (colorScale*30) + ")"; 
             }          
-            console.log(background);
             return background;
-/*
-            var background = "rgb(255, 255, 255)"; 
-            if(d.data.id == "coins") return;
-            var score = d.data.value * 10;
-            if(score == 'n/a') {
-                background = "rgb(200, 200, 200)"; 
-            } else if (d.data.sentiment == "neg") {
-                background = "rgb(255, " + (255-score*5) + ", " + (255-score*5) + ")"; 
-            } else if (d.data.sentiment == "pos") {
-                background = "rgb(" + (255-score*5) + ", 255, " + (255-score*5) + ")"; 
-            }          
-            return background;
-*/
         })
         .style("fill-opacity", function(d) {
             if(!d.data.sentiment) return 1;
