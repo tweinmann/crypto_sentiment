@@ -49,24 +49,11 @@ d3.json("/json", function(error, data) {
             var colorScale = parseInt((new Date().getTime() - new Date(d.data.timestamp).getTime()) / (1000 * 60 * 60 * 24));
             var background = "rgb(255, 255, 255)";
             if (d.data.sentiment == "neg") {
-                background = "rgb(255, " + (colorScale*40) + ", " + (colorScale*40) + ")"; 
+                background = "rgb(255, " + (colorScale*30) + ", " + (colorScale*30) + ")"; 
             } else if (d.data.sentiment == "pos") {
-                background = "rgb(" + (colorScale*40) + ", 255, " + (colorScale*40) + ")"; 
+                background = "rgb(" + (colorScale*30) + ", 255, " + (colorScale*30) + ")"; 
             }          
             return background;
-/*
-            var background = "rgb(255, 255, 255)"; 
-            if(d.data.id == "coins") return;
-            var score = d.data.value * 10;
-            if(score == 'n/a') {
-                background = "rgb(200, 200, 200)"; 
-            } else if (d.data.sentiment == "neg") {
-                background = "rgb(255, " + (255-score*5) + ", " + (255-score*5) + ")"; 
-            } else if (d.data.sentiment == "pos") {
-                background = "rgb(" + (255-score*5) + ", 255, " + (255-score*5) + ")"; 
-            }          
-            return background;
-*/
         })
         .style("fill-opacity", function(d) {
             if(!d.data.sentiment) return 1;
