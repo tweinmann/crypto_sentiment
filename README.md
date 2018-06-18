@@ -2,7 +2,7 @@
 
 # crypto sentiment
 
-Tiny sample app that provides an "at a glance" view of news article sentiments per crypto currency. 
+Tiny sample app that provides an "at a glance" view of news article sentiments per crypto currency.  
 
 On a regular interval it does the following:
 
