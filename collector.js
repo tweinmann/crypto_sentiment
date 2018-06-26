@@ -34,12 +34,12 @@ exports.collectData = function collectData() {
     }).then((input) => {
         // process all articles
         return calculateSentiment(input, coins);
-    }).then((input) => {
+    }).catch((err) => {
+        console.log(err);
+    }).then(() => {
         // wait 4 hours and restart
         setTimeout(() => {collectData()}, 1000 * 3600);
         console.log("Collecting new articles in 1 hour ...")
-    }).catch((err) => {
-        console.log(err);
     });
  
 }
