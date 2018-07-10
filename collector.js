@@ -99,7 +99,7 @@ function loadArticles(articles = [], page = 1) {
         // merge arrays of articles
         articles = articles.concat(input);
         if(input.length == 100) return loadArticles(articles, page + 1);
-        console.log("Loading article metadata - finished!");
+        console.log("Loading article metadata - finished!"); 
         return articles;
     });
 }
