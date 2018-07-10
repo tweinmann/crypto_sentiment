@@ -1,15 +1,10 @@
 // pull in libraries
-const util = require('util');
-const express = require('express');
 const request = require('request');
 const Sentiment = require('sentiment');
 const moment = require('moment');
-const requestPromise = require('request-promise');
-const Joi = require('joi');
 const NewsAPI = require('newsapi');
 const MongoClient = require('mongodb').MongoClient;
 const Coinmarketcap = require('node-coinmarketcap-api');
-const collector = require('./collector');
 const extractor = require('node-article-extractor');
 
 // load environment vars
@@ -92,7 +87,7 @@ function loadArticles(articles = [], page = 1) {
             sources: 'crypto-coins-news',
             language: 'en',
             pageSize: 100,
-            from: moment().add(-1, 'weeks').format('YYYY-MM-DD'),
+            from: moment().add(-1, 'days').format('YYYY-MM-DD'),
             page: page
         }).then((response) => {
             console.log("Loading article metadata - " + (response.totalResults - ((page-1) * 100)) + " to go");

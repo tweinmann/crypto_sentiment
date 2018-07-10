@@ -2,16 +2,12 @@
 const express = require('express');
 const path = require('path');
 const collector = require('./collector');
-const morgan = require('morgan');
 
 // load environment vars
 require('dotenv').config();
  
 // instances
 const app = express();
-
-// logger
-//app.use(morgan('combined')); 
 
 // request handler
 app.get('/', function(req, res) {
