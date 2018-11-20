@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/tweinmann/crypto_sentiment.svg?branch=master)](https://travis-ci.org/tweinmann/crypto_sentiment)
 
-# crypto sentiment
+# crypto sentiment 
 
 Tiny sample app that provides an "at a glance" view of news article sentiments per crypto currency. 
 
