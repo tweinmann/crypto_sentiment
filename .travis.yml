@@ -1,7 +1,7 @@
 language: node_js
 node_js: node
 cache: npm
-#before_script: npm run now-clean 
+before_script: npm run now-clean 
 script: npm run now-deploy
 after_script: npm run now-scale 
 env:
