@@ -8,7 +8,7 @@
     "test": "nodemon --inspect app.js",
     "now-start": "node app.js",
     "now-clean": "if [ $TRAVIS_BRANCH = 'master' ]; then SUFFIX=''; else SUFFIX=-$TRAVIS_BRANCH; fi; now rm --token=$NOW_TOKEN --yes crypto-sentiment$SUFFIX",
-    "now-deploy": "if [ $TRAVIS_BRANCH = 'master' ]; then SUFFIX=''; else SUFFIX=-$TRAVIS_BRANCH; fi; now alias --token=$NOW_TOKEN $(now -t $NOW_TOKEN --name=crypto-sentiment$SUFFIX --regions=bru --npm --public -e NEWS_API_KEY=@news-api-key -e MONGODB_URL=@mongo-db-url -e MONGODB_NAME=crypto_sentiment) crypto-sentiment$SUFFIX; now scale --token=$NOW_TOKEN crypto-sentiment$SUFFIX.now.sh bru 1 1; now rm crypto-sentiment$SUFFIX --safe --yes",
+    "now-deploy": "if [ $TRAVIS_BRANCH = 'master' ]; then SUFFIX=''; else SUFFIX=-$TRAVIS_BRANCH; fi; now alias --token=$NOW_TOKEN $(now -t $NOW_TOKEN --name=crypto-sentiment$SUFFIX --regions=bru --npm --public -e NEWS_API_KEY=@news-api-key -e MONGODB_URL=@mongo-db-url -e MONGODB_NAME=crypto_sentiment) crypto-sentiment$SUFFIX; now scale --token=$NOW_TOKEN crypto-sentiment$SUFFIX.now.sh bru 1 1; now rm --token=$NOW_TOKEN crypto-sentiment$SUFFIX --safe --yes",
     "now-scale": "if [ $TRAVIS_BRANCH = 'master' ]; then SUFFIX=''; else SUFFIX=-$TRAVIS_BRANCH; fi; now scale --token=$NOW_TOKEN crypto-sentiment$SUFFIX.now.sh bru 1 1"
   },
   "repository": {
