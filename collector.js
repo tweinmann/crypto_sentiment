@@ -32,7 +32,7 @@ exports.collectData = function collectData() {
     }).catch((err) => {
         console.log(err);
     }).then(() => {
-        // wait 4 hours and restart
+        // wait 1 hours and restart
         setTimeout(() => {collectData()}, 1000 * 3600);
         console.log("Collecting new articles in 1 hour ...")
     });
@@ -46,11 +46,12 @@ exports.updateRates = function updateRates() {
     loadRates().then((input) => {
         // store rates in global scope
         rates = input;
+    }).catch((err) => {
+        console.log(err);
+    }).then(() => {
         // wait 10 minutes seconds and restart
         setTimeout(() => {updateRates()}, 1000 * 60 * 10);
         console.log("Updating rates in 10 minutes ...")
-    }).catch((err) => {
-        console.log(err);
     });
 
 }
