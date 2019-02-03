@@ -1,11 +1,11 @@
 // pull in libraries
-const request = require('request');
 const Sentiment = require('sentiment');
 const moment = require('moment');
 const NewsAPI = require('newsapi');
 const MongoClient = require('mongodb').MongoClient;
 const Coinmarketcap = require('node-coinmarketcap-api');
-const extractor = require('node-article-extractor');
+const { extract } =  require('article-parser');
+const htmlToText = require('html-to-text');
 
 // load environment vars
 require('dotenv').config();
@@ -126,19 +126,19 @@ function calculateSentiment(articles) {
             if(!found) {
                 // calculate sentiment
                 return new Promise((resolve, reject) => {
-                    request(article.url, (err, res, body) => {
-                        if(!err) {
-                            var content = extractor(body);
-                            var sentiment = new Sentiment();
-                            var result = sentiment.analyze(content.text);
-                            var coinWeighting = calculateCoinWeighting(content.text, coins);
-                            resolve({'timestamp':Date.parse(article.publishedAt),'weighting':coinWeighting,'score':result.score,'comparative':result.comparative,'title':article.title,'url':article.url,'source':article.source.id});
-                        } else {
-                            // no sentiment calculated, but proceed
-                            console.log("Failed to fetch article -> " + article.url);
-                        }
+
+                    extract(article.url).then((extractedArticle) => {
+                        var content = htmlToText.fromString(extractedArticle.content, {wordwrap: null, ignoreHref: true, ignoreImage: true});
+                        var sentiment = new Sentiment();
+                        var result = sentiment.analyze(content);
+                        var coinWeighting = calculateCoinWeighting(content, coins);
+                        resolve({'timestamp':Date.parse(article.publishedAt),'weighting':coinWeighting,'score':result.score,'comparative':result.comparative,'title':article.title,'url':article.url,'source':article.source.id});
+                    }).catch((err) => {
+                        // no sentiment calculated, but proceed
+                        console.log("Failed to fetch article -> " + article.url);
                         resolve(null);
                     });
+
                 });
             } else {
                 return null;
