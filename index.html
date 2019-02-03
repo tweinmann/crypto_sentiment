@@ -10,7 +10,6 @@ text {
 </style>
 <svg width="960" height="960" style="text-align: center"><g transform="translate(1,1)"></g></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 
 var svg = d3.select("svg"),
@@ -49,9 +48,9 @@ d3.json("/json", function(error, data) {
             var colorScale = parseInt((new Date().getTime() - new Date(d.data.timestamp).getTime()) / (1000 * 60 * 60 * 24));
             var background = "rgb(255, 255, 255)";
             if (d.data.sentiment == "neg") {
-                background = "rgb(255, " + (colorScale*30) + ", " + (colorScale*30) + ")"; 
+                background = "rgb(255, " + (colorScale*8) + ", " + (colorScale*8) + ")"; 
             } else if (d.data.sentiment == "pos") {
-                background = "rgb(" + (colorScale*30) + ", 255, " + (colorScale*30) + ")"; 
+                background = "rgb(" + (colorScale*8) + ", 255, " + (colorScale*8) + ")"; 
             }          
             return background;
         })
@@ -80,7 +79,7 @@ d3.json("/json", function(error, data) {
         .style("class", ".bubble_hover")
         .text(function(d) {
             if(!d.data.sentiment) {
-                return d.data.id.replace(" ", "\n") + " (" + d.data.diff + "%)";
+                return d.data.id.replace(" ", "\n") + " (" + (d.data.diff?d.data.diff +"%":"") + ")";
             } else return;
         })
         .style("font-size", function(d) {
@@ -104,18 +103,7 @@ function hovered(hover) {
     }
   };
 }
-/*
-$(document).ready(function(){
 
-    $.get("/recentArticles", function(data, status){
-        var articles = JSON.parse(data);
-        articles.forEach((article) => {
-            $("#list").append('<div style="font: 15px arial; text-align: center"><a href="' + article.url + '">' + article.title + '</a></div>');
-        });
-    });
-
-});
-*/
 </script>
 <body>
     <div id="list"></div>
