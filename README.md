@@ -7,7 +7,7 @@ Tiny sample app that provides an "at a glance" view of news article sentiments p
 On a regular interval it does the following:
 
 1. Get top 100 coins from https://www.coinmarketcap.com
-2. Get news articles from https://www.ccn.com/ for past 7 days via https://newsapi.org
+2. Get news articles from https://www.cryptocompare.com
 3. For each article ...
     1. Get full HTML from article source URL
     2. Extract plain text (strip layout, adds, etc)
