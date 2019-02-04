@@ -6,6 +6,8 @@ const MongoClient = require('mongodb').MongoClient;
 const Coinmarketcap = require('node-coinmarketcap-api');
 const { extract } =  require('article-parser');
 const htmlToText = require('html-to-text');
+const cc = require('cryptocompare');
+global.fetch = require('node-fetch')
 
 // load environment vars
 require('dotenv').config();
@@ -13,6 +15,7 @@ require('dotenv').config();
 // instances
 const coinmarketcap = new Coinmarketcap();
 const newsapi = new NewsAPI(process.env.NEWS_API_KEY);
+cc.setApiKey(process.env.CRYPTO_COMPARE_API_KEY);
 
 // coins in global scope
 var coins = [];
@@ -80,8 +83,20 @@ exports.getRates = function getRates() {
     return rates;
 }
 
+function loadArticles() {
+    // Basic Usage:
+    return cc.newsList('EN').then(newsList => {
+        var result = []; 
+        newsList.forEach((item) => {
+            result.push({'url':item.url, 'publishedAt':new Date(item.published_on * 1000).toISOString(), 'title':item.title, 'source': {'id': item.source}});
+        });
+        console.log("Loading article metadata - " + result.length + " found");
+        return result;
+    }).catch(console.error); 
+}
+
 // load articles from newsapi
-function loadArticles(articles = [], page = 1) {
+function loadArticlesOld(articles = [], page = 1) {
     return new Promise((resolve, reject) => {
         newsapi.v2.everything({
  //           q: 'cryptocurrency OR blockchain',
@@ -99,7 +114,7 @@ function loadArticles(articles = [], page = 1) {
     }).then((input) => {
         // merge arrays of articles
         articles = articles.concat(input);
-        if(input.length == 100) return loadArticles(articles, page + 1);
+        if(input.length == 100) return loadArticlesOld(articles, page + 1);
         console.log("Loading article metadata - finished!"); 
         return articles;
     });
