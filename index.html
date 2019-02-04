@@ -79,7 +79,7 @@ d3.json("/json", function(error, data) {
         .style("class", ".bubble_hover")
         .text(function(d) {
             if(!d.data.sentiment) {
-                return d.data.id.replace(" ", "\n") + " (" + (d.data.diff?d.data.diff +"%":"") + ")";
+                return d.data.id.replace(" ", "\n") + " (" + (d.data.diff?d.data.diff:"0") + "%)";
             } else return;
         })
         .style("font-size", function(d) {
