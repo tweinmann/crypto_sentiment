@@ -29,7 +29,7 @@ Check out the example -> https://crypto-sentiment.now.sh
 1. Create a file '''.env''' in the directory with the following content:
 
 ```
-NEWS_API_KEY=[your NewsAPI key]
+CRYPTO_COMPARE_API_KEY=[your Cryptocompare API key]
 MONGODB_URL=mongodb://[your db user]:[your db password]@[your db URL]
 MONGODB_NAME=[your db name]
 ```
