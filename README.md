@@ -39,7 +39,7 @@ MONGODB_NAME=[your db name]
 **Usage**
 
 1. `npm start`
-2. Access root of web app "/"
+2. Access root of web app "http://localhost:3000/"
 
 
  
