@@ -1,7 +1,6 @@
 // pull in libraries
 const Sentiment = require('sentiment');
 const moment = require('moment');
-const NewsAPI = require('newsapi');
 const MongoClient = require('mongodb').MongoClient;
 const Coinmarketcap = require('node-coinmarketcap-api');
 const { extract } =  require('article-parser');
