@@ -48,9 +48,9 @@ d3.json("/json", function(error, data) {
             var colorScale = parseInt((new Date().getTime() - new Date(d.data.timestamp).getTime()) / (1000 * 60 * 60 * 24));
             var background = "rgb(255, 255, 255)";
             if (d.data.sentiment == "neg") {
-                background = "rgb(255, " + (colorScale*8) + ", " + (colorScale*8) + ")"; 
+                background = "rgb(255, " + (colorScale*35) + ", " + (colorScale*35) + ")"; 
             } else if (d.data.sentiment == "pos") {
-                background = "rgb(" + (colorScale*8) + ", 255, " + (colorScale*8) + ")"; 
+                background = "rgb(" + (colorScale*35) + ", 255, " + (colorScale*35) + ")"; 
             }          
             return background;
         })
