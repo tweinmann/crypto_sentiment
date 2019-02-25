@@ -42,4 +42,5 @@ MONGODB_NAME=[your db name]
 2. Access root of web app "http://localhost:3000/"
 
 
+
  
