@@ -64,7 +64,7 @@ exports.getArticles = function getArticles() {
         MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
             if (err) reject(err);
             var dbo = db.db(process.env.MONGODB_NAME);
-            dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-1, 'week').toDate().getTime()}}).sort([['_id', -1]]).toArray((err, result) => {
+            dbo.collection("articles").find({"timestamp" : {"$gte": moment().add(-1, 'day').toDate().getTime()}}).sort([['_id', -1]]).toArray((err, result) => {
                 if (err) reject(err);
                 db.close();
                 resolve(result);
