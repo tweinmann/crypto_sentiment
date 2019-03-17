@@ -3,11 +3,7 @@ cache:
   paths:
     - node_modules/
 stages:
-  - setup
   - deploy
-setup:
-  stage: setup
-  script: npm install
 deploy:
   stage: deploy
   script:
