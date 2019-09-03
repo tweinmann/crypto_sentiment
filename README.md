@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tweinmann/crypto_sentiment.svg?branch=master)](https://travis-ci.org/tweinmann/crypto_sentiment)
+[![Build Status](https://gitlab.com/tweinmann/crypto_sentiment/badges/master/pipeline.svg)](https://gitlab.com/tweinmann/crypto_sentiment/pipelines)
 
 # crypto sentiment 
 
