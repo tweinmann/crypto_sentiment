@@ -7,7 +7,7 @@
     "start": "node app.js",
     "test": "nodemon --inspect app.js",
     "now-start": "node app.js",
-    "now-deploy": "if [ $TRAVIS_BRANCH = 'master' ]; then SUFFIX=''; else SUFFIX=-$TRAVIS_BRANCH; fi; now alias --token=$NOW_TOKEN $(now -t $NOW_TOKEN --name=crypto-sentiment$SUFFIX --regions=bru --npm --public -e CRYPTO_COMPARE_API_KEY=@crypto-compare-api-key -e MONGODB_URL=@mongo-db-url -e MONGODB_NAME=crypto_sentiment) crypto-sentiment$SUFFIX; now scale --token=$NOW_TOKEN crypto-sentiment$SUFFIX.now.sh bru 1 1; now rm --token=$NOW_TOKEN crypto-sentiment$SUFFIX --safe --yes"
+    "now-deploy": "now alias --token=$NOW_TOKEN $(now -t $NOW_TOKEN --name=crypto-sentiment --regions=bru --npm --public -e CRYPTO_COMPARE_API_KEY=@crypto-compare-api-key -e MONGODB_URL=@mongo-db-url -e MONGODB_NAME=crypto_sentiment) crypto-sentiment; now scale --token=$NOW_TOKEN crypto-sentiment.now.sh bru 1 1; now rm --token=$NOW_TOKEN crypto-sentiment --safe --yes"
   },
   "repository": {
     "type": "git",
