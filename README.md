@@ -21,26 +21,13 @@ Check out the example -> https://crypto-sentiment.now.sh
 
 **Prerequisites**
 
-1. Node
-2. MongoDB
-
-**Installation**
-
-1. Create a file '''.env''' in the directory with the following content:
-
-```
-CRYPTO_COMPARE_API_KEY=[your Cryptocompare API key]
-MONGODB_URL=mongodb://[your db user]:[your db password]@[your db URL]
-MONGODB_NAME=[your db name]
-```
-
-2. `nmp install`
+1. Docker
 
 **Usage**
 
-1. `npm start`
-2. Access root of web app "http://localhost:3000/"
-
+1. Run `docker-compose build`
+2. Run `docker-compose up`
+3. Access app at `http://localhost:8080/`
 
 
 

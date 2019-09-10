@@ -101,10 +101,10 @@ function calculateSentiment(articles) {
             // lookup article
             var url = process.env.MONGODB_URL;
             MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
-                if (err) reject(err);
+                if (err) return reject(err);
                 var dbo = db.db(process.env.MONGODB_NAME);
                 dbo.collection("articles").findOne({url: article.url}, (err, res) => {
-                    if (err) reject(err);
+                    if (err) return reject(err);
                     db.close();
                     if (!res) resolve(false);
                     else resolve(true);
@@ -112,22 +112,19 @@ function calculateSentiment(articles) {
             });
         }).then((found) => {        
             if(!found) {
-                // calculate sentiment
-                return new Promise((resolve, reject) => {
 
-                    extract(article.url).then((extractedArticle) => {
+                return extract(article.url).then((extractedArticle) => {
                         var content = htmlToText.fromString(extractedArticle.content, {wordwrap: null, ignoreHref: true, ignoreImage: true});
                         var sentiment = new Sentiment();
                         var result = sentiment.analyze(content);
                         var coinWeighting = calculateCoinWeighting(content, coins);
-                        resolve({'timestamp':Date.parse(article.publishedAt),'weighting':coinWeighting,'score':result.score,'comparative':result.comparative,'title':article.title,'url':article.url,'source':article.source.id});
+                        return {'timestamp':Date.parse(article.publishedAt),'weighting':coinWeighting,'score':result.score,'comparative':result.comparative,'title':article.title,'url':article.url,'source':article.source.id};
                     }).catch((err) => {
                         // no sentiment calculated, but proceed
                         console.log("Failed to fetch article -> " + article.url);
-                        resolve(null);
+                        return null;
                     });
 
-                });
             } else {
                 return null;
             }
@@ -161,6 +158,9 @@ function calculateSentiment(articles) {
                 console.log("Calculating article sentiment - finished!");
                 return;
             }
+        }).catch((err) => {
+            console.log("Retrying in 10 seconds ...");
+            setTimeout(() => {calculateSentiment(articles)}, 1000 * 10);
         });  
     } else {
         return null;
