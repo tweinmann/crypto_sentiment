@@ -101,10 +101,10 @@ function calculateSentiment(articles) {
             // lookup article
             var url = process.env.MONGODB_URL;
             MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
-                if (err) reject(err);
+                if (err) return reject(err);
                 var dbo = db.db(process.env.MONGODB_NAME);
                 dbo.collection("articles").findOne({url: article.url}, (err, res) => {
-                    if (err) reject(err);
+                    if (err) return reject(err);
                     db.close();
                     if (!res) resolve(false);
                     else resolve(true);
@@ -161,6 +161,9 @@ function calculateSentiment(articles) {
                 console.log("Calculating article sentiment - finished!");
                 return;
             }
+        }).catch((err) => {
+            console.log("Retrying in 10 seconds ...");
+            setTimeout(() => {calculateSentiment(articles)}, 1000 * 10);
         });  
     } else {
         return null;
