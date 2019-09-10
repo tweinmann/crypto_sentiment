@@ -112,22 +112,19 @@ function calculateSentiment(articles) {
             });
         }).then((found) => {        
             if(!found) {
-                // calculate sentiment
-                return new Promise((resolve, reject) => {
 
-                    extract(article.url).then((extractedArticle) => {
+                return extract(article.url).then((extractedArticle) => {
                         var content = htmlToText.fromString(extractedArticle.content, {wordwrap: null, ignoreHref: true, ignoreImage: true});
                         var sentiment = new Sentiment();
                         var result = sentiment.analyze(content);
                         var coinWeighting = calculateCoinWeighting(content, coins);
-                        resolve({'timestamp':Date.parse(article.publishedAt),'weighting':coinWeighting,'score':result.score,'comparative':result.comparative,'title':article.title,'url':article.url,'source':article.source.id});
+                        return {'timestamp':Date.parse(article.publishedAt),'weighting':coinWeighting,'score':result.score,'comparative':result.comparative,'title':article.title,'url':article.url,'source':article.source.id};
                     }).catch((err) => {
                         // no sentiment calculated, but proceed
                         console.log("Failed to fetch article -> " + article.url);
-                        resolve(null);
+                        return null;
                     });
 
-                });
             } else {
                 return null;
             }
