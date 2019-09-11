@@ -25,9 +25,10 @@ Check out the example -> https://crypto-sentiment.now.sh
 
 **Usage**
 
-1. Run `docker-compose build`
-2. Run `docker-compose up`
-3. Access app at `http://localhost:8080/`
+1. Copy `.env.sample` to `.env` and set DB users and passwords
+2. Run `docker-compose build`
+3. Run `docker-compose up`
+4. Access app at `http://localhost:8080/`
 
 
 
