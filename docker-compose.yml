@@ -9,6 +9,7 @@ services:
     depends_on:
       - mongo
     environment: 
+      - CRYPTO_COMPARE_API_KEY=${CRYPTO_COMPARE_API_KEY}
       - MONGODB_URL=mongodb://${MONGO_NON_ROOT_USERNAME}:${MONGO_NON_ROOT_PASSWORD}@mongo:27017/crypto_sentiment
       - MONGODB_NAME=crypto_sentiment
   mongo:
