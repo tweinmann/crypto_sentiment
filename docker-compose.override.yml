@@ -1,0 +1,8 @@
+# dev setup that mounts local volumes
+version: "2"
+services:
+  app:
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: nodemon app.js

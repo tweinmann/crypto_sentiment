@@ -4,6 +4,9 @@ services:
     container_name: app
     restart: always
     build: .
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - "8080:3000"
     depends_on:
