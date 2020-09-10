@@ -30,7 +30,7 @@
     "mongodb": "^3.1.13",
     "morgan": "^1.9.1",
     "node-coinmarketcap-api": "^1.0.4",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "sentiment": "^5.0.1",
