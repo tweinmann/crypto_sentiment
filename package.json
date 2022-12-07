@@ -23,7 +23,7 @@
     "article-parser": "^2.4.0",
     "cryptocompare": "^0.7.2",
     "dotenv": "^5.0.1",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "html-to-text": "^4.0.0",
     "joi": "^13.7.0",
     "moment": "^2.29.4",
